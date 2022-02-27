@@ -40,7 +40,7 @@ function Login() {
             </button>
             <a
               class="inline-block align-baseline text-sm text-blue-500 hover:text-blue-800"
-              href="#"
+              href="#home"
             >
               Forgot Password?
             </a>

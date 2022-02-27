@@ -1,19 +1,17 @@
-import Grid from "@mui/material/Grid";
 import { Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
-
 function Preferences() {
   const history = useHistory();
-  const [genres, setGenres] = useState([]);
+  const [displayedData, setDisplayedData] = useState();
   const [selectedGenre, setSelectedGenre] = useState([]);
 
   const redirect = () => {
     history.push({
       pathname: "/register/artists",
-      state: { 'genres': selectedGenre },
+      state: { genres: selectedGenre },
     });
   };
 
@@ -31,17 +29,31 @@ function Preferences() {
     event.target.style.color = newColor;
   };
 
-  
   useEffect(() => {
     axios
       .get("http://localhost:8000/genre")
       .then(function (response) {
         var receivedGenres = response.data;
-        var genreNames = [];
+        console.log(receivedGenres);
+        var data = [];
+        console.log(receivedGenres);
         receivedGenres.forEach(async (value) => {
-          genreNames.push(value.name);
+          data.push(
+            <button
+              class="bg-white hover:bg-black hover:text-white"
+              style={{
+                margin: "1vh",
+              }}
+              onClick={handleClick}
+              key={value.id}
+            >
+              <img
+                src={`data:image/jpeg;base64,${value.image}`}
+              />
+            </button>
+          );
         });
-        setGenres(genreNames);
+        setDisplayedData(data);
       })
       .catch(function (error) {
         console.log(error);
@@ -52,39 +64,31 @@ function Preferences() {
   return (
     <div
       style={{
-        backgroundColor: "#00788A",
-        width: "100vw",
-        height: "100vh",
+        maxHeight: "100vh",
         minHeight: "100vh",
+        minWidth: "100vh",
+        overflow: "hidden",
       }}
-      class="bg-[#00788A]"
+      class="bg-[#00788A] flex flex-center"
     >
-      <h1
-      class="text-white text-2xl flex justify-center"
-      >Select your favorite genres:</h1>
-      <Grid
-        container
-        style={{
-          paddingTop: "20vh",
-          justifyContent: "center",
-        }}
-      >
-        {genres.map((genre) => (
-          <Button
-            xs={6}
-            class="bg-white w-20 h-10 rounded hover:bg-black hover:text-white mr-1"
-            onClick={handleClick}
-            key={genre}
-          >
-            {genre}
-          </Button>
-        ))}
-      </Grid>
-      <Button 
-      onClick={redirect}
-      class="bg-white px-2 py-1 rounded hover:bg-black hover:text-white mt-10">
-        CONTINUE
-      </Button>
+      <div class="bg-[#00788A] grid grid-cols-4 items-center">
+        {displayedData}
+        <div class="h-24 w-64 relative cursor-pointer mb-5 ml-20">
+          <div class="absolute inset-0 bg-white opacity-25 rounded-lg shadow-2xl"></div>
+          <div class="absolute inset-0 transform hover:skew-y-12 transition duration-300">
+            <div class="h-full w-full bg-white rounded-lg shadow-2xl">
+              <Button
+                onClick={redirect}
+                class="bg-white px-2 py-1 rounded hover:bg-black hover:text-white mt-2"
+              >
+                SELECT YOUR FAVORITE ARTISTS <br/>
+                          AND <br/>
+                       CONTINUE
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
