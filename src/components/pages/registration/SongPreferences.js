@@ -1,65 +1,105 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
-import SongImage from "../../../assets/images/1.jpg";
 import { Button } from "@mui/material";
 import { useHistory } from "react-router-dom";
+import StarIcon from '@mui/icons-material/Star';
 
 function SongPreferences(props) {
   const history = useHistory();
   const location = useLocation();
-  const [displayedData, setDisplayedData] = useState();
+  const [data, setData] = useState([]);
   const [selectedSongs, setSelectedSongs] = useState([]);
 
-  const pushSelectedSong = (e, id) => {
-    e.target.style.backgroundColor = "black";
-    setSelectedSongs(selectedSongs => [...selectedSongs, id])
+  const pushSelectedSong = (el) => {
+    const newData = data.map((d) => {
+      if (d.id === el.target.id) {
+        return {
+          ...d,
+          liked: !d.liked,
+        };
+      } else {
+        return d;
+      }
+    });
+    setData(newData);
+    if(!(el.target.id in selectedSongs)) {
+      setSelectedSongs((selectedSongs) => [...selectedSongs, el.target.id]);
+    }
   };
 
   const redirect = () => {
+    console.log(selectedSongs);
     history.push({
       pathname: "/dashboard",
       state: { songs: selectedSongs },
     });
   };
 
+  const getSongs = () => {
+    return data.map((el) => {
+      return (
+        <div class="group object-contain">
+          <div className="image-container">
+            <img src={`data:image/jpeg;base64,${el.image}`} alt="" />
+            <div
+              id={el.id}
+              onClick={(e) => {
+                pushSelectedSong({
+                  target: {
+                    id: el.id,
+                    style: e.target.style,
+                    liked: el.liked,
+                  },
+                });
+              }}
+              class="relative text-xs"
+            >
+              {el.liked == false && (
+                <StarIcon
+                sx={{
+                  fontSize: "5vh"
+                }}
+                />
+              )}
+
+              {el.liked == true && (
+                <StarIcon 
+                style={{ color: "yellow" }}
+                sx={{
+                  fontSize: "5vh"
+                }}
+                />
+              )}
+            </div>
+          </div>
+          <div class="p-2">
+            <h3 class="text-white py-1 text-base justify-center">{el.song}</h3>
+            <p class="text-gray-400 text-sm">By {el.artist}</p>
+          </div>
+        </div>
+      );
+    });
+  };
+
   useEffect(() => {
     axios
-      .post("http://localhost:8000/user/songs", {
+      .post("http://localhost:8000/api/artists/songs", {
         genres: location.state.selectedGenres,
         artists: location.state.selectedArtists,
       })
       .then(function (response) {
         const val = response.data;
-        var data = [];
-        val.forEach(async (re) => {
-          data.push(
-            <div id={re.song_id}>
-              <div
-                class="group object-contain"
-                id={re.song_id}
-                onClick={(e) => {
-                  pushSelectedSong(e, re.song_id);
-                }}
-              >
-                <img
-                  id={re.song_id}
-                  alt="Placeholder"
-                  class="block h-32 w-48 rounded object-center object-contain"
-                  src={SongImage}
-                />
-              </div>
-
-              <div class="p-2">
-                <h3 class=" text-black py-1 text-base justify-center">
-                  {re.song_name}
-                </h3>
-                <p class="text-gray-400 text-sm">By {re.artist_name}</p>
-              </div>
-            </div>
-          );
+        const dataReceived = val.map(({ id, song_name, artist, image }) => {
+          return {
+            id: id,
+            song: song_name,
+            artist: artist.name,
+            image: image,
+            liked: false,
+          };
         });
-        setDisplayedData(data);
+        setData(dataReceived);
       })
       .catch(function (error) {
         console.log(error);
@@ -70,12 +110,13 @@ function SongPreferences(props) {
   return (
     <div
       style={{
-        maxHeight: "100vh",
+        background: "#0f0c29" /* fallback for old browsers */,
+        background:
+          "-webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29)" /* Chrome 10-25, Safari 5.1-6 */,
+        background:
+          "linear-gradient(to right, #24243e, #302b63, #0f0c29)" /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */,
         minHeight: "100vh",
-        minWidth: "100vh",
-        overflow: "hidden",
       }}
-      class="bg-[#00788A]"
     >
       <div
         style={{
@@ -98,13 +139,13 @@ function SongPreferences(props) {
               maxHeight: "80vh",
             }}
           >
-            {displayedData}
+            {getSongs()}
           </div>
         </div>
       </div>
-      <Button 
-      onClick={redirect}
-      class="bg-white text-black rounded px-2 py-1">FINISH</Button>
+      <Button onClick={redirect} class="bg-white text-black rounded px-2 py-1">
+        FINISH
+      </Button>
     </div>
   );
 }

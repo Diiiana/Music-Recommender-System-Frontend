@@ -1,12 +1,32 @@
 import "../../../assets/styles/App.css";
-import React from "react";
+import React, { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-// import { useState } from "react";
 import welcome from "../../../assets/images/welcome.png";
-// import Cubes from "../../commons/Cubes";
-// import hp from "../../../assets/images/hp.png";
+import emailjs from "@emailjs/browser";
 
 function App() {
+  const form = useRef();
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+
+    emailjs
+      .sendForm(
+        "service_n5yitry",
+        "template_ba9ycfw",
+        form.current,
+        "KHlZwTPAwxV7yvw1k"
+      )
+      .then(
+        (result) => {
+          console.log(result.text);
+        },
+        (error) => {
+          console.log(error.text);
+        }
+      );
+  };
+
   const history = useHistory();
 
   const redirect = () => {
@@ -15,6 +35,31 @@ function App() {
 
   const redirectRegister = () => {
     history.push("/user/register");
+  };
+
+  const [toSend, setToSend] = useState({
+    subject: "Muse Subscription",
+    from_name: "Muse",
+    to_email: "",
+    message: "You have successfully registered a subscription for Muse news!",
+    reply_to: "",
+  });
+
+  const handleChange = (e) => {
+    console.log(e.target.value);
+    setToSend({ ...toSend, [e.target.name]: e.target.value });
+  };
+
+  const submit = (e) => {
+    // e.preventDefault();
+    console.log("here");
+    // send("service_n5yitry", "template_ba9ycfw", toSend, "KHlZwTPAwxV7yvw1k")
+    //   .then((response) => {
+    //     console.log("SUCCESS!", response.status, response.text);
+    //   })
+    //   .catch((err) => {
+    //     console.log("FAILED...", err);
+    //   });
   };
 
   const menuToggle = (e) => {
@@ -27,12 +72,12 @@ function App() {
       className="overflow-y-hidden"
       style={{ minHeight: 700, backgroundColor: "#BE123C" }}
     >
-      <nav
-        style={{ backgroundColor: "#00788A" }}
-        class="bg-white border-gray-200 px-2 sm:px-5 py-3.5 flex fixed w-screen"
-      >
-        <div class="flex-1 bg-[#00788A] flex justify-center mr-auto">
-          <div id="menu" class="bg-[#00788A] ml-auto md:hidden inline-flex items-center">
+      <nav class="border-gray-200 px-2 sm:px-5 py-3.5 flex fixed w-screen">
+        <div class="flex-1 flex justify-center mr-auto">
+          <div
+            id="menu"
+            class="bg-[#00788A] ml-auto md:hidden inline-flex items-center"
+          >
             <button
               onClick={(e) => menuToggle(e)}
               class="flex items-center px-3 py-2 border rounded"
@@ -52,7 +97,11 @@ function App() {
             </button>
           </div>
 
-          <div class="bg-[#00788A] hidden w-full md:block md:w-auto" id="mobile-menu">
+          <div
+            class="hidden w-full md:block md:w-auto"
+            id="mobile-menu"
+            style={{ backgroundColor: "transparent" }}
+          >
             <ul class="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium">
               <li>
                 <a
@@ -92,8 +141,10 @@ function App() {
       </nav>
       <section
         id="home"
-        style={{ maxHeight: "100vh", minHeight: "100vh" }}
-        class="bg-[#00788A] grid grid-cols-2 divide-x py-12 items-center"
+        class="h-full bg-gray-500 grid grid-cols-2 divide-x py-12 items-center"
+        style={{
+          minHeight: "100vh",
+        }}
       >
         <div class="text-center text-xl flex justify-center items-center text-white">
           <div class="relative z-0">
@@ -144,24 +195,20 @@ function App() {
         style={{
           backgroundColor: "#caf0f8",
           minHeight: "100vh",
-          maxHeight: "100vh", 
+          maxHeight: "100vh",
         }}
       >
-        <div
-        class = "grid grid-cols-2">
-          <div
-          class="bg-white sm:text-sm sm:ml-10 sm:mt-10 md:text-xl md:w-1/2 leading-8 rounded px-8 py-10 md:mt-24 md:ml-24 text-center"
-          >
-            <p>Muse is an application that allows you to become absorbed in thought
-              by listening to the best songs from 1950 to 2019. Find the music you like 
-              and embrace the curiosity to discover new songs and artists.
+        <div class="grid grid-cols-2">
+          <div class="bg-white sm:text-sm sm:ml-10 sm:mt-10 md:text-xl md:w-1/2 leading-8 rounded px-8 py-10 md:mt-24 md:ml-24 text-center">
+            <p>
+              Muse is an application that allows you to become absorbed in
+              thought by listening to the best songs from 1950 to 2019. Find the
+              music you like and embrace the curiosity to discover new songs and
+              artists.
             </p>
-
           </div>
         </div>
-        <p
-        class="text-center align-middle sm:py-32 md:py-8 text-4xl"
-        >
+        <p class="text-center align-middle sm:py-32 md:py-8 text-4xl">
           ABOUT US
         </p>
       </section>
@@ -182,15 +229,15 @@ function App() {
           height: "30vh",
           position: "relative",
           bottom: "0",
-          top: "100%"
+          top: "100%",
         }}
         class="mb-0 bottom-0"
       >
         <div class="grid grid-cols-2">
           <div class="grid grid-cols-2">
-            <p
-            class="-rotate-90 text-center text-6xl mt-24 text-white italic"
-            >MUSE</p>
+            <p class="-rotate-90 text-center text-6xl mt-24 text-white italic">
+              MUSE
+            </p>
 
             <div class="flex justify-center items-center lg:grid-cols-4 md:grid-cols-2">
               <div class="mb-6 mt-1 text-white">
@@ -216,43 +263,10 @@ function App() {
           </div>
 
           <div class="">
-            <form action="">
-              <div class="mr-48 mt-1 grid flex justify-right items-right text-right text-white mt-10">
-                <p class="mr-2">
-                  <strong>Sign up to receive updates</strong>
-                </p>
-
-                <div>
-                  <input
-                    type="text"
-                    class="
-                form-control
-                block
-                w-52
-                px-3
-                py-1.5
-                text-black
-                bg-white 
-                rounded
-                transition
-                ease-in-out
-                float-right
-              "
-                    placeholder="Email address"
-                  />
-                </div>
-
-                <div class="mb-6 mr-11 mt-1">
-                  <button
-                    type="submit"
-                    class="float-right px-6 py-2 border-2 
-                    border-white text-white font-medium 
-                    text-xs rounded "
-                  >
-                    SUBSCRIBE
-                  </button>
-                </div>
-              </div>
+            <form ref={form} onSubmit={sendEmail}>
+              <label>Email</label>
+              <input type="email" name="to_email" />
+              <input type="submit" value="Send" />
             </form>
           </div>
         </div>

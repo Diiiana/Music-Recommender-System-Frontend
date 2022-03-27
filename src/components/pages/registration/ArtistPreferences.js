@@ -65,12 +65,13 @@ function Artists() {
   };
 
   useEffect(() => {
+    console.log(location.state.genres)
     axios
-      .post("http://localhost:8000/artist/genre", {
-        genres: location.state.genres,
-        count: 50,
+      .post("http://localhost:8000/api/artists/genre", {
+        genres: location.state.genres
       })
       .then(function (response) {
+        console.log(response.data)
         var receivedArtists = response.data;
         var artistsNames = [];
         receivedArtists.forEach(async (value) => {
@@ -79,7 +80,7 @@ function Artists() {
               <input
                 type="checkbox"
                 id={value[0]}
-                name={value[1]}
+                name={value[0]}
                 value={value[0]}
                 onChange={(e) => {
                   handleChange({
@@ -105,10 +106,11 @@ function Artists() {
           .get("http://localhost:8000/user/artists")
           .then(function (response) {
             var receivedArtists = response.data;
-            receivedArtists.forEach(async (value) => {
-              allArtists.push(value.name);
-            });
-            setAllArtists(allArtists);
+            const data = receivedArtists.map(({ id, name }) => {
+              return { label: name, value: id }
+            })
+            console.log(data);
+            setAllArtists(data);
           })
           .catch(function (error) {
             console.log(error);
@@ -119,12 +121,13 @@ function Artists() {
   return (
     <div
       style={{
-        maxHeight: "100vh",
+        background:"#0f0c29",  /* fallback for old browsers */
+        background: "-webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29)",  /* Chrome 10-25, Safari 5.1-6 */
+        background: "linear-gradient(to right, #24243e, #302b63, #0f0c29)", /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
         minHeight: "100vh",
         minWidth: "100vh",
         overflow: "hidden",
       }}
-      class="bg-[#00788A] "
     >
       <h1
         class="text-white text-center"
@@ -142,7 +145,7 @@ function Artists() {
           display: "flex",
           justifyContent: "center",
           marginTop: "5vh",
-          height: "76vh",
+          height: "83vh",
         }}
       >
         <div
@@ -172,6 +175,7 @@ function Artists() {
             className={classes.root}
             style={{ width: "50vh" }}
             options={allArtists}
+            getOptionLabel={(option) => option.label}
             onChange={(event, value) => setSearchedArtists(value)}
             renderInput={(params) => (
               <TextField

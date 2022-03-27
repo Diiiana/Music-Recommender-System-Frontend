@@ -10,6 +10,7 @@ import GenrePreferences from './components/pages/registration/GenrePreferences';
 import ArtistPreferences from './components/pages/registration/ArtistPreferences';
 import SongPreferences from './components/pages/registration/SongPreferences';
 import Dashboard from './components/pages/user/Dashboard';
+import ViewSong from './components/pages/song/ViewSong';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -22,6 +23,7 @@ ReactDOM.render(
         <Route path="/register/artists" render={() => <ArtistPreferences />} />
         <Route path="/register/songs" render={() => <SongPreferences />} />
         <Route path="/dashboard" render={() => <Dashboard />} />
+        <Route path="/song/view/:id" render={() => <ViewSong />} />
       </Switch>
     </Router>
   </React.StrictMode>,
