@@ -82,7 +82,7 @@ function Login() {
   };
 
   return (
-    <div className="bg-[#00788A] flex h-screen justify-center items-center">
+    <div className="bg-[#0e7490] flex h-screen justify-center items-center">
       <div class="w-full max-w-md flex ">
         <form
           class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"

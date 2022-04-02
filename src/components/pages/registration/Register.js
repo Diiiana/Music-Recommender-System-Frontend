@@ -139,7 +139,7 @@ function Register() {
   };
 
   return (
-    <div className="bg-[#00788A] flex h-screen justify-center items-center">
+    <div className="bg-[#0e7490] flex h-screen justify-center items-center">
       <div className="w-full max-w-md xs:mx-4">
         <form
           className={`bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 ${classes.form}`}

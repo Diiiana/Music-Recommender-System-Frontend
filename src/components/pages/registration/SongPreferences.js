@@ -108,7 +108,7 @@ function SongPreferences() {
   }, []);
 
   return (
-    <div className="bg-[#00788A] w-full h-screen">
+    <div className="bg-[#0e7490] w-full h-screen">
       <div
         style={{
           padding: "1vh 2vh 0 2vh",

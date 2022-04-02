@@ -116,7 +116,7 @@ function Artists() {
   }, []);
 
   return (
-    <div className="bg-[#00788A] h-screen w-full">
+    <div className="bg-[#0e7490] h-screen w-full">
       <div className="w-full flex justify-center items-center">
         <div className="bg-gray-200 xl:w-[83rem] mt-10 xs:h-[36rem] px-5 rounded-2xl overflow-x-hidden overflow-y-scroll">
           <div className="text-left">
