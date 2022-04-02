@@ -1,15 +1,15 @@
-import { React, useState } from "react";
-import avatar from "../../../assets/images/avatar_register.png";
-import { useHistory } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import axios from "axios";
 import IconButton from "@material-ui/core/IconButton";
 import Visibility from "@material-ui/icons/Visibility";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import TextField from "@material-ui/core/TextField";
-import validator from "validator";
-import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-import axios from "axios";
+import { useHistory, useParams } from "react-router-dom";
+
+const focusedColor = "black";
 
 const useStyles = makeStyles((theme) => ({
   form: {
@@ -31,31 +31,28 @@ const useStyles = makeStyles((theme) => ({
   },
   root: {
     "& label.Mui-focused": {
-      color: "black",
+      color: focusedColor,
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: "black",
+      borderBottomColor: focusedColor,
     },
     "& .MuiFilledInput-underline:after": {
-      borderBottomColor: "black",
+      borderBottomColor: focusedColor,
     },
     "& .MuiOutlinedInput-root": {
       "&.Mui-focused fieldset": {
-        borderColor: "black",
+        borderColor: focusedColor,
       },
     },
   },
 }));
 
-function Register() {
+function ChangePassword(props) {
   const classes = useStyles();
   const history = useHistory();
-  const [passwordConfirmError, setPasswordConfError] = useState("");
-  const [emailError, setEmailError] = useState("");
-  const [emailValue, setEmailValue] = useState("");
-  const [usernameValue, setUsernameValue] = useState("");
-  const [usernameError, setUsernameError] = useState("");
+  const resetData = useParams();
 
+  const [passwordConfirmError, setPasswordConfError] = useState("");
   const [values, setValues] = useState({
     password: "",
     showPassword: false,
@@ -65,22 +62,6 @@ function Register() {
     confirmPassword: "",
     showConfirmPassword: false,
   });
-
-  const checkUsername = (e) => {
-    var username = e.target.value;
-    setUsernameValue({ ...usernameValue, username });
-  };
-
-  const checkEmailAddress = (e) => {
-    var email = e.target.value;
-    setEmailValue({ ...emailValue, email });
-
-    if (!validator.isEmail(email)) {
-      setEmailError("Invalid email address!");
-    } else {
-      setEmailError("");
-    }
-  };
 
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
@@ -104,92 +85,35 @@ function Register() {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (usernameValue.username === undefined || usernameValue.username.length < 2) {
-      setUsernameError("Username too short!");
+  const handleSubmit = () => {
+    if (values.password !== valuesConfirmPassword.confirmPassword) {
+      setPasswordConfError("Passwords do not match!");
     } else {
-      setUsernameError("");
-      if (values.password.length === undefined || values.password.length < 5) {
-        setPasswordConfError("Password too short!");
-      } else {
-        if (values.password !== valuesConfirmPassword.confirmPassword) {
-          setPasswordConfError("Passwords do not match!");
-        } else {
-          setPasswordConfError("");
-          if (emailValue.email === undefined || !validator.isEmail(emailValue.email)) {
-            setEmailError("Invalid email address!");
-          } else {
-            setEmailError("");
-            axios
-              .post(`http://localhost:8000/api/users/register/`, {
-                email: emailValue.email,
-                user_name: usernameValue.username,
-                password: values.password,
-              })
-              .then((res) => {
-                history.push("/register/genres");
-                console.log(res.data);
-              });
-          }
-        }
+      setPasswordConfError("");
+      try {
+        const id = resetData.id;
+        axios
+          .post(`http://127.0.0.1:8000/api/users/change-password`, {
+            userId: id,
+            password: values.password,
+          })
+          .then((response) => {
+            console.log(response);
+          });
+      } catch (error) {
+        console.log(error);
       }
     }
   };
 
   return (
     <div className="bg-[#00788A] flex h-screen justify-center items-center">
-      <div className="w-full max-w-md xs:mx-4">
+      <div className="w-full max-w-md flex ">
         <form
           className={`bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 ${classes.form}`}
           noValidate
         >
-          <img
-            style={{ display: "inline-block" }}
-            className="h-20 w-20 object-center"
-            src={avatar}
-            alt=""
-          />
-          <h1
-            className="text-lg"
-            style={{ display: "inline-block", marginLeft: "3vh" }}
-          >
-            Create Account
-          </h1>
-          <div className="mb-4">
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoFocus
-              onChange={(e) => checkUsername(e)}
-              className={classes.root}
-            />
-            <div style={{ color: "red" }}>{usernameError}</div>
-          </div>
-
-          <div className="mb-4">
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              type="email"
-              label="Email Address"
-              name="email"
-              autoFocus
-              onChange={(e) => checkEmailAddress(e)}
-              className={classes.root}
-            />
-            <div style={{ color: "red" }}>{emailError}</div>
-          </div>
-
+          <p>Request Password Reset</p>
           <div className="mb-4">
             <TextField
               variant="outlined"
@@ -255,7 +179,6 @@ function Register() {
             />
             <div style={{ color: "red" }}>{passwordConfirmError}</div>
           </div>
-
           <Button
             type="submit"
             fullWidth
@@ -264,7 +187,7 @@ function Register() {
             className={classes.submit}
             onClick={handleSubmit}
           >
-            Register
+            submit
           </Button>
         </form>
       </div>
@@ -272,4 +195,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default ChangePassword;

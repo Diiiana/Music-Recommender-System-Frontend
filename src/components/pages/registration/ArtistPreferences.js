@@ -7,21 +7,26 @@ import TextField from "@material-ui/core/TextField";
 import { useLocation } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 
-const focusedColor = "white";
 const useStyles = makeStyles({
   root: {
+    "& label": {
+      color: "black",
+    },
     "& label.Mui-focused": {
-      color: focusedColor,
+      color: "black",
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: focusedColor,
+      borderBottomColor: "black",
     },
     "& .MuiFilledInput-underline:after": {
-      borderBottomColor: focusedColor,
+      borderBottomColor: "black",
     },
     "& .MuiOutlinedInput-root": {
       "&.Mui-focused fieldset": {
-        borderColor: focusedColor,
+        borderColor: "black",
+      },
+      "& fieldset": {
+        borderColor: "black",
       },
     },
   },
@@ -38,16 +43,11 @@ function Artists() {
   const classes = useStyles();
 
   const handleClick = (event) => {
-    var newColor = "white";
-    var newBackground = "black";
-    if (event.target.style.backgroundColor === "black") {
-      newColor = "black";
-      newBackground = "white";
-    }
-    event.target.style.backgroundColor = newBackground;
-    event.target.style.color = newColor;
-
-    const l = [...selectedArtists, ...searchedArtists];
+    var sa = searchedArtists.map(el =>{
+      return el.value;
+    });
+    
+    const l = [...selectedArtists, ...sa];
     setSelectedArtists(l);
 
     history.push({
@@ -65,13 +65,11 @@ function Artists() {
   };
 
   useEffect(() => {
-    console.log(location.state.genres)
     axios
       .post("http://localhost:8000/api/artists/genre", {
-        genres: location.state.genres
+        genres: location.state.genres,
       })
       .then(function (response) {
-        console.log(response.data)
         var receivedArtists = response.data;
         var artistsNames = [];
         receivedArtists.forEach(async (value) => {
@@ -103,13 +101,12 @@ function Artists() {
       })
       .then(function () {
         axios
-          .get("http://localhost:8000/user/artists")
+          .get("http://localhost:8000/api/artists")
           .then(function (response) {
             var receivedArtists = response.data;
             const data = receivedArtists.map(({ id, name }) => {
-              return { label: name, value: id }
-            })
-            console.log(data);
+              return { label: name, value: id };
+            });
             setAllArtists(data);
           })
           .catch(function (error) {
@@ -119,84 +116,62 @@ function Artists() {
   }, []);
 
   return (
-    <div
-      style={{
-        background:"#0f0c29",  /* fallback for old browsers */
-        background: "-webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29)",  /* Chrome 10-25, Safari 5.1-6 */
-        background: "linear-gradient(to right, #24243e, #302b63, #0f0c29)", /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-        minHeight: "100vh",
-        minWidth: "100vh",
-        overflow: "hidden",
-      }}
-    >
-      <h1
-        class="text-white text-center"
-        style={{
-          fontSize: "4vh",
-        }}
-      >
-        Artists you might like
-      </h1>
-      <div
-        style={{
-          padding: "1vh 2vh 0 2vh",
-          color: "white",
-          fontSize: "2vh",
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "5vh",
-          height: "83vh",
-        }}
-      >
-        <div
-          style={{
-            overflowY: "scroll",
-            overflowX: "hidden",
-            maxHeight: "80vh",
-            width: "80vh",
-            color: "white",
-          }}
-        >
-          {artists}
-        </div>
-        <div
-          style={{
-            marginLeft: "20%",
-            marginTop: "60px",
-            lineColor: "white",
-            color: "white",
-            maxHeight: "30vh",
-          }}
-        >
-          <Autocomplete
-            multiple
-            id="a"
-            size="small"
-            className={classes.root}
-            style={{ width: "50vh" }}
-            options={allArtists}
-            getOptionLabel={(option) => option.label}
-            onChange={(event, value) => setSearchedArtists(value)}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                style={{ color: "white" }}
-                label="Search Box"
-                variant="outlined"
+    <div className="bg-[#00788A] h-screen w-full">
+      <div className="w-full flex justify-center items-center">
+        <div className="bg-gray-200 xl:w-[83rem] mt-10 xs:h-[36rem] px-5 rounded-2xl overflow-x-hidden overflow-y-scroll">
+          <div className="text-left">
+            <div className="flex justify-center items-center mt-4">
+              <Autocomplete
+                multiple
+                id="a"
+                size="small"
+                className={classes.root}
+                style={{ width: "50vh" }}
+                options={allArtists}
+                getOptionLabel={(option) => option.label}
+                onChange={(event, value) => setSearchedArtists(value)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    style={{ color: "white" }}
+                    label="Search Artist"
+                    variant="outlined"
+                  />
+                )}
               />
-            )}
-          />
+            </div>
+            <p className="text-black bg-gray-200 w-full xs:text-xl mt-2 sm:text-xl md:text-2xl xl:text-3xl mb-2">
+              Artists you might like
+            </p>
+
+            <div
+              className="grid xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-3
+              text-left mr-8"
+            >
+              {artists}
+            </div>
+          </div>
         </div>
       </div>
 
-      <div>
-        <Button
-          class="rounded px-2 py-1"
-          onClick={handleClick}
-          style={{ backgroundColor: "white", color: "black", float: "right" }}
-        >
-          Continue
-        </Button>
+      <div className="w-full">
+        <div className="mt-0 mr-5 float-right">
+          <Button onClick={handleClick}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              fill="white"
+              className="bi bi-arrow-right-circle"
+              viewBox="0 0 16 16"
+            >
+              <path
+                fillRule="evenodd"
+                d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"
+              />
+            </svg>
+          </Button>
+        </div>
       </div>
     </div>
   );

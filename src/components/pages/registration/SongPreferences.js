@@ -5,7 +5,7 @@ import { Button } from "@mui/material";
 import { useHistory } from "react-router-dom";
 import StarIcon from '@mui/icons-material/Star';
 
-function SongPreferences(props) {
+function SongPreferences() {
   const history = useHistory();
   const location = useLocation();
   const [data, setData] = useState([]);
@@ -39,7 +39,7 @@ function SongPreferences(props) {
   const getSongs = () => {
     return data.map((el) => {
       return (
-        <div class="group object-contain">
+        <div className="group object-contain">
           <div className="image-container">
             <img src={`data:image/jpeg;base64,${el.image}`} alt="" />
             <div
@@ -53,9 +53,9 @@ function SongPreferences(props) {
                   },
                 });
               }}
-              class="relative text-xs"
+              className="relative text-xs"
             >
-              {el.liked == false && (
+              {el.liked === false && (
                 <StarIcon
                 sx={{
                   fontSize: "5vh"
@@ -63,7 +63,7 @@ function SongPreferences(props) {
                 />
               )}
 
-              {el.liked == true && (
+              {el.liked === true && (
                 <StarIcon 
                 style={{ color: "yellow" }}
                 sx={{
@@ -73,9 +73,9 @@ function SongPreferences(props) {
               )}
             </div>
           </div>
-          <div class="p-2">
-            <h3 class="text-white py-1 text-base justify-center">{el.song}</h3>
-            <p class="text-gray-400 text-sm">By {el.artist}</p>
+          <div className="p-2">
+            <h3 className="text-white py-1 text-base justify-center">{el.song}</h3>
+            <p className="text-gray-400 text-sm">By {el.artist}</p>
           </div>
         </div>
       );
@@ -108,16 +108,7 @@ function SongPreferences(props) {
   }, []);
 
   return (
-    <div
-      style={{
-        background: "#0f0c29" /* fallback for old browsers */,
-        background:
-          "-webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29)" /* Chrome 10-25, Safari 5.1-6 */,
-        background:
-          "linear-gradient(to right, #24243e, #302b63, #0f0c29)" /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */,
-        minHeight: "100vh",
-      }}
-    >
+    <div className="bg-[#00788A] w-full h-screen">
       <div
         style={{
           padding: "1vh 2vh 0 2vh",
@@ -128,11 +119,11 @@ function SongPreferences(props) {
         }}
       >
         <div>
-          <h3 class="text-2xl sm:text-2xl md:text-2xl font-bold text-gray-200 mb-5">
-            Top Beats
+          <h3 className="text-2xl sm:text-2xl md:text-2xl font-bold text-gray-200 mt-5">
+            Top Songs For You
           </h3>
           <div
-            class="p-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-7 gap-2"
+            className="p-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-7 gap-2"
             style={{
               overflowX: "hidden",
               overflowY: "scroll",
@@ -143,7 +134,7 @@ function SongPreferences(props) {
           </div>
         </div>
       </div>
-      <Button onClick={redirect} class="bg-white text-black rounded px-2 py-1">
+      <Button onClick={redirect} className="bg-white text-black rounded px-2 py-1 flex float-right mr-5 mt-2">
         FINISH
       </Button>
     </div>

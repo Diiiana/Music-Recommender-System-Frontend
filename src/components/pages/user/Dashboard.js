@@ -17,7 +17,7 @@ function Dashboard(props) {
 
   useEffect(() => {
     axios
-      .post("http://localhost:8000/user/recommendations", {
+      .post("http://localhost:8000/api/recommendations/", {
         songs: location.state.songs,
       })
       .then(function (response) {
