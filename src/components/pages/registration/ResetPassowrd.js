@@ -62,13 +62,24 @@ function ResetPassowrd() {
   const classes = useStyles();
   const history = useHistory();
 
+  const [error, setError] = useState("");
   const [emailValue, setEmailValue] = useState("");
   const [emailError, setEmailError] = useState("");
 
   const [open, setOpen] = useState(false);
-
+  const [openError, setOpenError] = useState(false);
+  
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const handleOpenError = () => {
+    setError("Invalid email address!");
+    setOpenError(true);
+  };
+  const handleCloseError = () => {
+    setError("");
+    setOpenError(false);
+  };
 
   const checkEmailAddress = (e) => {
     var email = e.target.value;
@@ -88,24 +99,36 @@ function ResetPassowrd() {
       setEmailError("Invalid email address!");
     } else {
       setEmailError("");
-      try {
-        axios
-          .post(`http://127.0.0.1:8000/api/users/reset-password`, {
-            email: emailValue,
-          })
-          .then((response) => {
-            if (response.status === 200) {
-              handleOpen();
+      axios
+        .post(`http://127.0.0.1:8000/api/users/reset-password`, {
+          email: emailValue,
+        })
+        .catch((err) => {
+          const status = err.response ? err.response.status : null;
+          if (status === 200) {
+            handleOpen();
+          } else {
+            if (status === 404) {
+              handleOpenError();
+            } else {
+
             }
-          });
-      } catch (error) {
-        console.log(error);
-      }
+          }
+        });
     }
   };
 
   return (
     <div className="bg-[#0e7490] flex h-screen justify-center items-center">
+      <Modal
+        open={openError}
+        onClose={handleCloseError}
+        className="flex justify-center items-center"
+      >
+        <p className="bg-white rounded h-35 w-18 px-5 py-5">
+          {error}
+        </p>
+      </Modal>
       <div className="w-full max-w-md flex ">
         <form
           className={`bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 ${classes.form}`}
@@ -154,7 +177,7 @@ function ResetPassowrd() {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-                onClick={(e) => {
+                onClick={() => {
                   history.push("/user/login");
                 }}
               >

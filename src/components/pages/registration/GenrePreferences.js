@@ -1,27 +1,40 @@
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useLocation, useHistory } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import { Button } from "@mui/material";
 import axios from "axios";
 
 function GenrePreferences() {
   const history = useHistory();
+  const location = useLocation();
+
+  const [open, setOpen] = useState(false);
   const [number, setNumber] = useState(84);
   const [genres, setGenres] = useState([]);
-  const [selectedGenre, setSelectedGenre] = useState([]);
-  const [open, setOpen] = useState(false);
 
+  const [selectedGenre, setSelectedGenre] = useState([]);
+  
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const redirect = () => {
-    console.log(selectedGenre);
     if (selectedGenre.length < 1) {
       handleOpen();
     } else {
-      history.push({
-        pathname: "/register/artists",
-        state: { genres: selectedGenre },
+      axios
+      .post("http://localhost:8000/api/tags/user", {
+        userEmail: location.state.user,
+        genres: selectedGenre
+      })
+      .then(function (response) {
+        console.log(response.data);
+        history.push({
+          pathname: "/register/artists",
+          state: { 
+            user: location.state.user,
+            artists: response.data
+          },
+        });
       });
     }
   };

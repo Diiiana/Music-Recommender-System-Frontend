@@ -111,7 +111,7 @@ function Register() {
       setUsernameError("Username too short!");
     } else {
       setUsernameError("");
-      if (values.password.length === undefined || values.password.length < 5) {
+      if (values.password === undefined || values.password.length < 5) {
         setPasswordConfError("Password too short!");
       } else {
         if (values.password !== valuesConfirmPassword.confirmPassword) {
@@ -129,8 +129,13 @@ function Register() {
                 password: values.password,
               })
               .then((res) => {
-                history.push("/register/genres");
                 console.log(res.data);
+                history.push({
+                  pathname: "/register/genres",
+                  state: { 
+                    user: emailValue.email
+                  },
+                });
               });
           }
         }

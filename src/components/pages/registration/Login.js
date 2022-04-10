@@ -1,13 +1,19 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import avatar from "../../../assets/images/avatar.png";
-import Button from "@material-ui/core/Button";
-import TextField from "@material-ui/core/TextField";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
+import {
+  Button,
+  IconButton,
+  InputAdornment,
+  Grid,
+  Link,
+  TextField,
+} from "@material-ui/core";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import AxiosApi from "../../../services/AxiosApi";
-
+import validator from "validator";
+import axios from "axios";
 
 const focusedColor = "black";
 const useStyles = makeStyles((theme) => ({
@@ -49,71 +55,124 @@ const useStyles = makeStyles((theme) => ({
 function Login() {
   const classes = useStyles();
   const history = useHistory();
-  const initialFormData = Object.freeze({
-    email: "",
+  const [emailError, setEmailError] = useState("");
+  const [emailValue, setEmailValue] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [values, setValues] = useState({
     password: "",
+    showPassword: false,
   });
 
-  const [formData, updateFormData] = useState(initialFormData);
+  const handleClickShowPassword = () => {
+    setValues({ ...values, showPassword: !values.showPassword });
+  };
 
-  const handleChange = (e) => {
-    updateFormData({
-      ...formData,
-      [e.target.name]: e.target.value.trim(),
-    });
+  const handlePasswordChange = (prop) => (e) => {
+    setValues({ ...values, [prop]: e.target.value });
+  };
+
+  const checkEmailAddress = (e) => {
+    var email = e.target.value;
+    setEmailValue({ ...emailValue, email });
+
+    if (!validator.isEmail(email)) {
+      setEmailError("Invalid email address!");
+    } else {
+      setEmailError("");
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    AxiosApi.post(`users/login/`,
-      {
-        email: formData.email,
-        password: formData.password,
+    if (emailValue.email === undefined || emailValue.email.length < 5) {
+      setEmailError("Email too short!");
+    } else {
+      if (values.password === undefined || values.password.length < 5) {
+        setPasswordError("Password too short!");
+      } else {
+        setEmailError("");
+        setPasswordError("");
+        AxiosApi.post(`users/login/`, {
+          email: emailValue.email,
+          password: values.password,
+        }).then((res) => {
+          console.log(res);
+          localStorage.setItem("access_token", res.data.access);
+          localStorage.setItem("refresh_token", res.data.refresh);
+          AxiosApi.defaults.headers["Authorization"] =
+            "JWT " + localStorage.getItem("access_token");
+          axios
+            .get(`http://localhost:8000/api/songs/user/` + res.data.id)
+            .then((r) => {
+              console.log(r.data);
+              history.push({
+                pathname: "/dashboard",
+                state: {
+                  user: res.data.id,
+                  songs: r.data,
+                },
+              });
+            });
+        });
       }
-    ).then((res) => {
-      console.log(res);
-      localStorage.setItem("access_token", res.data.access);
-      localStorage.setItem("refresh_token", res.data.refresh);
-      AxiosApi.defaults.headers["Authorization"] =
-        "JWT " + localStorage.getItem("access_token");
-      history.push("/");
-    });
+    }
   };
 
   return (
     <div className="bg-[#0e7490] flex h-screen justify-center items-center">
-      <div class="w-full max-w-md flex ">
+      <div className="w-full max-w-md flex ">
         <form
-          class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
-          className={classes.form}
+          className={`bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 ${classes.form}`}
           noValidate
         >
           <img src={avatar} alt="" />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoFocus
-            onChange={handleChange}
-            className={classes.root}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            className={classes.root}
-            onChange={handleChange}
-          />
+          <div>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              type="email"
+              label="Email Address"
+              name="email"
+              autoFocus
+              onChange={(e) => checkEmailAddress(e)}
+              className={classes.root}
+            />
+            <div style={{ color: "red" }}>{emailError}</div>
+          </div>
+
+          <div>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="password"
+              label="Password"
+              name="password"
+              className={classes.root}
+              type={values.showPassword ? "text" : "password"}
+              onChange={handlePasswordChange("password")}
+              value={values.password}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      onMouseDown={(e) => e.preventDefault()}
+                      className="hover:text-black"
+                    >
+                      {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <div style={{ color: "red" }}>{passwordError}</div>
+          </div>
           <Button
             type="submit"
             fullWidth

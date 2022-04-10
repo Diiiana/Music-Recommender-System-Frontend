@@ -6,6 +6,7 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { useLocation } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
+import Modal from "@mui/material/Modal";
 
 const useStyles = makeStyles({
   root: {
@@ -34,29 +35,41 @@ const useStyles = makeStyles({
 
 function Artists() {
   const location = useLocation();
-  const [artists, setArtists] = useState([]);
+  const history = useHistory();
+  const classes = useStyles();
+  const [open, setOpen] = useState(false);
   const [allArtists, setAllArtists] = useState([]);
   const [selectedArtists, setSelectedArtists] = useState([]);
   const [searchedArtists, setSearchedArtists] = useState([]);
 
-  const history = useHistory();
-  const classes = useStyles();
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const handleClick = (event) => {
-    var sa = searchedArtists.map(el =>{
+    var sa = searchedArtists.map((el) => {
       return el.value;
     });
-    
-    const l = [...selectedArtists, ...sa];
-    setSelectedArtists(l);
 
-    history.push({
-      pathname: "/register/songs",
-      state: {
-        selectedArtists: l,
-        selectedGenres: location.state.genres,
-      },
-    });
+    const l = [...selectedArtists, ...sa];
+
+    if (l.length < 1) {
+      handleOpen();
+    } else {
+      axios
+      .post("http://localhost:8000/api/artists/music", {
+        artists: l,
+        userEmail: location.state.user
+      })
+      .then(function (response) {
+        history.push({
+          pathname: "/register/songs",
+          state: { 
+            user: location.state.user,
+            songs: response.data
+          },
+        });
+      });
+    }
   };
 
   const handleChange = (e) => {
@@ -64,59 +77,59 @@ function Artists() {
     setSelectedArtists(selectedArtists);
   };
 
+  const showArtists = () => {
+    var receivedArtists = location.state.artists;
+    return receivedArtists.map((value) => {
+      return (
+        <div id={value[0]}>
+          <input
+            type="checkbox"
+            id={value[0]}
+            name={value[0]}
+            value={value[0]}
+            onChange={(e) => {
+              handleChange({
+                target: {
+                  name: e.target.name,
+                  value: e.target.checked,
+                },
+              });
+            }}
+          />
+          {value[1]}
+          <br />
+        </div>
+      )
+    });
+  }
   useEffect(() => {
     axios
-      .post("http://localhost:8000/api/artists/genre", {
-        genres: location.state.genres,
-      })
+      .get("http://localhost:8000/api/artists")
       .then(function (response) {
         var receivedArtists = response.data;
-        var artistsNames = [];
-        receivedArtists.forEach(async (value) => {
-          artistsNames.push(
-            <div id={value[0]}>
-              <input
-                type="checkbox"
-                id={value[0]}
-                name={value[0]}
-                value={value[0]}
-                onChange={(e) => {
-                  handleChange({
-                    target: {
-                      name: e.target.name,
-                      value: e.target.checked,
-                    },
-                  });
-                }}
-              />
-              {value[1]}
-              <br />
-            </div>
-          );
+        const data = receivedArtists.map(({ id, name }) => {
+          return { label: name, value: id };
         });
-        setArtists(artistsNames);
+        setAllArtists(data);
       })
       .catch(function (error) {
         console.log(error);
-      })
-      .then(function () {
-        axios
-          .get("http://localhost:8000/api/artists")
-          .then(function (response) {
-            var receivedArtists = response.data;
-            const data = receivedArtists.map(({ id, name }) => {
-              return { label: name, value: id };
-            });
-            setAllArtists(data);
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
       });
   }, []);
 
   return (
     <div className="bg-[#0e7490] h-screen w-full">
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        className="flex justify-center items-center"
+      >
+        <p className="bg-white rounded h-30 w-15 px-5 py-5">
+          Please select at least two artists!
+        </p>
+      </Modal>
       <div className="w-full flex justify-center items-center">
         <div className="bg-gray-200 xl:w-[83rem] mt-10 xs:h-[36rem] px-5 rounded-2xl overflow-x-hidden overflow-y-scroll">
           <div className="text-left">
@@ -148,7 +161,7 @@ function Artists() {
               className="grid xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 xl:grid-cols-3
               text-left mr-8"
             >
-              {artists}
+              {showArtists()}
             </div>
           </div>
         </div>

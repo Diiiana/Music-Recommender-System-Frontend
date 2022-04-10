@@ -1,87 +1,64 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useLocation, useHistory } from "react-router-dom";
-import axios from "axios";
-import DashboardDrawer from '../../commons/DashboardDrawer';
+import UserNavbar from "../../commons/UserNavbar";
 
-function Dashboard(props) {
+function Dashboard() {
   const history = useHistory();
   const location = useLocation();
-  const [displayedData, setDisplayedData] = useState();
 
   const pushSelectedSong = (id) => {
+    console.log(id);
     history.push({
-      pathname: "/song/view",
-      state: { song: id },
+      pathname: "/song/view/" + id,
     });
   };
 
-  useEffect(() => {
-    axios
-      .post("http://localhost:8000/api/recommendations/", {
-        songs: location.state.songs,
-      })
-      .then(function (response) {
-        const val = response.data;
-        var data = [];
-        console.log(val)
-        val.forEach(async (re) => {
-          data.push(
-            <div id={re.song_id}>
-              <div
-                class="group object-contain"
-                id={re.song_id}
-                onClick={() => pushSelectedSong(re.id)}
-              >
-                <img
-                  id={re.song_id}
-                  alt=""
-                  class="block h-32 w-48 rounded object-center object-contain"
-                  src={`data:image/jpeg;base64,${re.image}`}
-                />
-              </div>
+  const getSongs = () => {
+    const val = location.state.songs;
+    return val.map((re) => {
+      return (
+        <div id={re.song_id}>
+          <div
+            class="group object-contain"
+            id={re.song_id}
+            onClick={() => pushSelectedSong(re.id)}
+          >
+            <img
+              id={re.song_id}
+              alt=""
+              class="block h-32 w-48 rounded object-center object-contain"
+              src={`data:image/jpeg;base64,${re.image}`}
+            />
+          </div>
 
-              <div class="p-2">
-                <h3 class="text-white py-1 text-base justify-center">
-                  {re.song_name}
-                </h3>
-                <p class="text-gray-400 text-sm">By {re.artist.name}</p>
-              </div>
-            </div>
-          );
-        });
-        setDisplayedData(data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      })
-      .then(function () {});
-  }, []);
+          <div class="p-2">
+            <h3 class="text-white py-1 text-base justify-center">
+              {re.song_name}
+            </h3>
+            <p class="text-gray-400 text-sm">By {re.artist.name}</p>
+          </div>
+        </div>
+      );
+    });
+  };
 
   return (
     <div className="bg-[#0e7490] h-screen">
-        <DashboardDrawer
-        variant="persistent"
-        anchor="left"
-        class="w-4/12"
-        />
+      <UserNavbar />
+      <div style={{ justifyContent: "center" }}>
+        <h3 class="text-2xl sm:text-2xl md:text-2xl font-bold text-gray-200 mb-5">
+          Dashboard
+        </h3>
         <div
-        style={{justifyContent: "center",}}
+          class="p-8 grid 
+          grid-cols-1 xs:grid-cols-2 sm:grid-cols-6 md:grid-cols-4 lg:grid-cols-4 
+          xl:grid-cols-8 gap-2"
+
         >
-          <h3 class="text-2xl sm:text-2xl md:text-2xl font-bold text-gray-200 mb-5">
-            Dashboard
-          </h3>
-          <div
-            class="p-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-7 gap-2"
-            style={{
-              overflowX: "hidden",
-              overflowY: "scroll",
-              maxHeight: "80vh",
-            }}
-          >
-            {displayedData}
-          </div>
+          {getSongs()}
         </div>
       </div>
+    </div>
   );
 }
 
