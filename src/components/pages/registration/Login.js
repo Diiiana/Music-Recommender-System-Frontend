@@ -11,16 +11,12 @@ import {
 } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import AxiosApi from "../../../services/AxiosApi";
 import validator from "validator";
 import axios from "axios";
 
 const focusedColor = "black";
 const useStyles = makeStyles((theme) => ({
   form: {
-    width: "100%",
-    marginTop: theme.spacing(1),
-    backgroundColor: "white",
     borderRadius: "1em 1em 1em 1em",
     padding: "20px",
   },
@@ -38,12 +34,6 @@ const useStyles = makeStyles((theme) => ({
     "& label.Mui-focused": {
       color: focusedColor,
     },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: focusedColor,
-    },
-    "& .MuiFilledInput-underline:after": {
-      borderBottomColor: focusedColor,
-    },
     "& .MuiOutlinedInput-root": {
       "&.Mui-focused fieldset": {
         borderColor: focusedColor,
@@ -55,8 +45,8 @@ const useStyles = makeStyles((theme) => ({
 function Login() {
   const classes = useStyles();
   const history = useHistory();
-  const [emailError, setEmailError] = useState("");
   const [emailValue, setEmailValue] = useState("");
+  const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [values, setValues] = useState({
     password: "",
@@ -74,12 +64,6 @@ function Login() {
   const checkEmailAddress = (e) => {
     var email = e.target.value;
     setEmailValue({ ...emailValue, email });
-
-    if (!validator.isEmail(email)) {
-      setEmailError("Invalid email address!");
-    } else {
-      setEmailError("");
-    }
   };
 
   const handleSubmit = (e) => {
@@ -93,28 +77,50 @@ function Login() {
       } else {
         setEmailError("");
         setPasswordError("");
-        AxiosApi.post(`users/login/`, {
-          email: emailValue.email,
-          password: values.password,
-        }).then((res) => {
-          console.log(res);
-          localStorage.setItem("access_token", res.data.access);
-          localStorage.setItem("refresh_token", res.data.refresh);
-          AxiosApi.defaults.headers["Authorization"] =
-            "JWT " + localStorage.getItem("access_token");
-          axios
-            .get(`http://localhost:8000/api/songs/user/` + res.data.id)
-            .then((r) => {
-              console.log(r.data);
-              history.push({
-                pathname: "/dashboard",
-                state: {
-                  user: res.data.id,
-                  songs: r.data,
-                },
+        axios
+          .post(`http://localhost:8000/api/users/login`, {
+            email: emailValue.email,
+            password: values.password,
+          })
+          .then((res) => {
+            localStorage.setItem("access_token", res.data.access);
+            localStorage.setItem("refresh_token", res.data.refresh);
+
+            axios
+              .get(
+                `http://localhost:8000/api/users/preferences/` + res.data.id,
+                {
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem(
+                      "access_token"
+                    )}`,
+                  },
+                }
+              )
+              .then((r) => {
+                if (r.status === 200) {
+                  history.push({
+                    pathname: "/dashboard",
+                    state: {
+                      user: res.data.id,
+                      songs: r.data,
+                    },
+                  });
+                } else {
+                  history.push({
+                    pathname: "/register/genres",
+                    state: {
+                      user: res.data.id,
+                    },
+                  });
+                }
               });
-            });
-        });
+          })
+          .catch((err) => {
+            if (err.response.status === 401) {
+              setPasswordError("Invalid data!");
+            }
+          });
       }
     }
   };
@@ -131,7 +137,6 @@ function Login() {
             <TextField
               variant="outlined"
               margin="normal"
-              required
               fullWidth
               id="email"
               type="email"
@@ -148,7 +153,6 @@ function Login() {
             <TextField
               variant="outlined"
               margin="normal"
-              required
               fullWidth
               id="password"
               label="Password"

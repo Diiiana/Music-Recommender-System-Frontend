@@ -63,12 +63,13 @@ function ResetPassowrd() {
   const history = useHistory();
 
   const [error, setError] = useState("");
+  const [userId, setUserId] = useState("");
   const [emailValue, setEmailValue] = useState("");
   const [emailError, setEmailError] = useState("");
 
   const [open, setOpen] = useState(false);
   const [openError, setOpenError] = useState(false);
-  
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -76,6 +77,7 @@ function ResetPassowrd() {
     setError("Invalid email address!");
     setOpenError(true);
   };
+
   const handleCloseError = () => {
     setError("");
     setOpenError(false);
@@ -100,19 +102,16 @@ function ResetPassowrd() {
     } else {
       setEmailError("");
       axios
-        .post(`http://127.0.0.1:8000/api/users/reset-password`, {
+        .post(`http://localhost:8000/api/users/reset-password`, {
           email: emailValue,
         })
+        .then((response) => {
+          setUserId(response.data);
+          handleOpen();
+        })
         .catch((err) => {
-          const status = err.response ? err.response.status : null;
-          if (status === 200) {
-            handleOpen();
-          } else {
-            if (status === 404) {
-              handleOpenError();
-            } else {
-
-            }
+          if (err.response.status === 404) {
+            handleOpenError();
           }
         });
     }
@@ -125,10 +124,9 @@ function ResetPassowrd() {
         onClose={handleCloseError}
         className="flex justify-center items-center"
       >
-        <p className="bg-white rounded h-35 w-18 px-5 py-5">
-          {error}
-        </p>
+        <p className="bg-white rounded h-35 w-18 px-5 py-5">{error}</p>
       </Modal>
+
       <div className="w-full max-w-md flex ">
         <form
           className={`bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 ${classes.form}`}
@@ -168,8 +166,8 @@ function ResetPassowrd() {
                 Email Request
               </Typography>
               <Typography sx={{ mt: 2 }}>
-                Please access your email and reset your password through the
-                reset link.
+                Please access your email and reset your password by validating
+                your account.
               </Typography>
               <Button
                 type="submit"
@@ -178,7 +176,9 @@ function ResetPassowrd() {
                 color="primary"
                 className={classes.submit}
                 onClick={() => {
-                  history.push("/user/login");
+                  history.push({
+                    pathname: "/user/changePassword/" + userId
+                  });
                 }}
               >
                 Confirm and Login

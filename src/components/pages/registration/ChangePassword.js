@@ -13,9 +13,6 @@ const focusedColor = "black";
 
 const useStyles = makeStyles((theme) => ({
   form: {
-    width: "100%",
-    marginTop: theme.spacing(1),
-    backgroundColor: "white",
     borderRadius: "1em 1em 1em 1em",
     padding: "20px",
   },
@@ -47,16 +44,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ChangePassword(props) {
+function ChangePassword() {
   const classes = useStyles();
   const history = useHistory();
   const resetData = useParams();
+  const [tokenValue, setTokenValue] = useState("");
 
   const [passwordConfirmError, setPasswordConfError] = useState("");
   const [values, setValues] = useState({
     password: "",
     showPassword: false,
   });
+
+  const checkTokenValue = (e) => {
+    var token = e.target.value;
+    setTokenValue({ ...tokenValue, token });
+  };
 
   const [valuesConfirmPassword, setValuesConfirmPassword] = useState({
     confirmPassword: "",
@@ -85,24 +88,33 @@ function ChangePassword(props) {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
     if (values.password !== valuesConfirmPassword.confirmPassword) {
       setPasswordConfError("Passwords do not match!");
     } else {
       setPasswordConfError("");
-      try {
-        const id = resetData.id;
-        axios
-          .post(`http://127.0.0.1:8000/api/users/change-password`, {
-            userId: id,
-            password: values.password,
-          })
-          .then((response) => {
-            console.log(response);
-          });
-      } catch (error) {
-        console.log(error);
-      }
+      const id = resetData.id;
+      console.log({
+        userId: id,
+        token: tokenValue.token,
+        password: values.password,
+      });
+      axios
+        .post("http://localhost:8000/api/users/changePassword", {
+          userId: id,
+          token: tokenValue.token,
+          password: values.password,
+        })
+        .then(
+          (response) => {
+            history.push({
+              pathname: "/user/login",
+            });
+          },
+        ).catch(error => {
+          console.log(error.response)
+        })
     }
   };
 
@@ -112,13 +124,27 @@ function ChangePassword(props) {
         <form
           className={`bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 ${classes.form}`}
           noValidate
+          id="form"
         >
           <p>Request Password Reset</p>
           <div className="mb-4">
             <TextField
               variant="outlined"
               margin="normal"
-              required
+              fullWidth
+              id="token"
+              type="text"
+              label="Verification code"
+              name="token"
+              autoFocus
+              onChange={(e) => checkTokenValue(e)}
+              className={classes.root}
+            />
+          </div>
+          <div className="mb-4">
+            <TextField
+              variant="outlined"
+              margin="normal"
               fullWidth
               id="password"
               label="Password"
@@ -148,7 +174,6 @@ function ChangePassword(props) {
             <TextField
               variant="outlined"
               margin="normal"
-              required
               fullWidth
               id="cpassword"
               label="Confirm Password"
@@ -185,7 +210,7 @@ function ChangePassword(props) {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={handleSubmit}
+            onClick={(e) => handleSubmit(e)}
           >
             submit
           </Button>

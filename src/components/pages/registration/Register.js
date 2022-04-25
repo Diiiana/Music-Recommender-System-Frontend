@@ -13,17 +13,12 @@ import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   form: {
-    width: "100%",
-    marginTop: theme.spacing(1),
-    backgroundColor: "white",
     borderRadius: "1em 1em 1em 1em",
     padding: "20px",
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
     background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-    border: 0,
-    borderRadius: 3,
     boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
     color: "white",
     height: 48,
@@ -32,12 +27,6 @@ const useStyles = makeStyles((theme) => ({
   root: {
     "& label.Mui-focused": {
       color: "black",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "black",
-    },
-    "& .MuiFilledInput-underline:after": {
-      borderBottomColor: "black",
     },
     "& .MuiOutlinedInput-root": {
       "&.Mui-focused fieldset": {
@@ -55,6 +44,7 @@ function Register() {
   const [emailValue, setEmailValue] = useState("");
   const [usernameValue, setUsernameValue] = useState("");
   const [usernameError, setUsernameError] = useState("");
+  const [registerError, setRegisterError] = useState("");
 
   const [values, setValues] = useState({
     password: "",
@@ -106,8 +96,10 @@ function Register() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (usernameValue.username === undefined || usernameValue.username.length < 2) {
+    if (
+      usernameValue.username === undefined ||
+      usernameValue.username.length < 2
+    ) {
       setUsernameError("Username too short!");
     } else {
       setUsernameError("");
@@ -118,24 +110,36 @@ function Register() {
           setPasswordConfError("Passwords do not match!");
         } else {
           setPasswordConfError("");
-          if (emailValue.email === undefined || !validator.isEmail(emailValue.email)) {
+          if (
+            emailValue.email === undefined ||
+            !validator.isEmail(emailValue.email)
+          ) {
             setEmailError("Invalid email address!");
           } else {
             setEmailError("");
             axios
-              .post(`http://localhost:8000/api/users/register/`, {
+              .post(`http://localhost:8000/api/users/register`, {
                 email: emailValue.email,
                 user_name: usernameValue.username,
                 password: values.password,
               })
               .then((res) => {
-                console.log(res.data);
-                history.push({
-                  pathname: "/register/genres",
-                  state: { 
-                    user: emailValue.email
-                  },
-                });
+                if (res.status === 200) {
+                  setRegisterError("");
+                  history.push({
+                    pathname: "/user/login",
+                  });
+                }
+              })
+              .catch(function (error) {
+                if (error.response.status === 400) {
+                  console.log(error.response.data.detail);
+                  setRegisterError(error.response.data.detail);
+                } else {
+                  if (error.response.status === 500) {
+                    setRegisterError("An error occured, please try again!");
+                  }
+                }
               });
           }
         }
@@ -260,7 +264,9 @@ function Register() {
             />
             <div style={{ color: "red" }}>{passwordConfirmError}</div>
           </div>
-
+          <div className="text-center">
+            <div className="text-red-500">{registerError}</div>
+          </div>
           <Button
             type="submit"
             fullWidth

@@ -153,7 +153,7 @@ function Artists() {
                 )}
               />
             </div>
-            <p className="text-black bg-gray-200 w-full xs:text-xl mt-2 sm:text-xl md:text-2xl xl:text-3xl mb-2">
+            <p className="text-black w-full xs:text-xl mt-2 sm:text-xl md:text-2xl xl:text-3xl mb-2">
               Artists you might like
             </p>
 

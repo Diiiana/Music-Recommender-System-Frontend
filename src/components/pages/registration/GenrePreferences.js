@@ -3,39 +3,84 @@ import { useLocation, useHistory } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import { Button } from "@mui/material";
 import axios from "axios";
+import { makeStyles } from "@mui/styles";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import TextField from "@material-ui/core/TextField";
+
+const useStyles = makeStyles({
+  root: {
+    "& label": {
+      color: "white",
+    },
+    "& label.Mui-focused": {
+      color: "white",
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "white",
+    },
+    "& .MuiFilledInput-underline:after": {
+      borderBottomColor: "white",
+    },
+    "& .MuiOutlinedInput-root": {
+      "&.Mui-focused fieldset": {
+        borderColor: "white",
+      },
+      "& fieldset": {
+        borderColor: "white",
+      },
+    },
+  },
+});
 
 function GenrePreferences() {
+  const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
 
   const [open, setOpen] = useState(false);
   const [number, setNumber] = useState(84);
   const [genres, setGenres] = useState([]);
-
+  const [allGenres, setAllGenres] = useState([]);
+  const [searchedGenre, setSearchedGenre] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState([]);
-  
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  function uniqueValues(l) {
+    var final = [];
+    l.forEach((v) => {
+      if (!(v in final)) {
+        final.push(v);
+      }
+    });
+    return final;
+  }
+
   const redirect = () => {
-    if (selectedGenre.length < 1) {
+    var sa = searchedGenre.map((el) => {
+      return el.value;
+    });
+
+    var l = [...selectedGenre, ...sa];
+    l = uniqueValues(l);
+    if (l.length < 2) {
       handleOpen();
     } else {
       axios
-      .post("http://localhost:8000/api/tags/user", {
-        userEmail: location.state.user,
-        genres: selectedGenre
-      })
-      .then(function (response) {
-        console.log(response.data);
-        history.push({
-          pathname: "/register/artists",
-          state: { 
-            user: location.state.user,
-            artists: response.data
-          },
+        .post("http://localhost:8000/api/tags/user", {
+          userId: location.state.user,
+          genres: l,
+        })
+        .then(function (response) {
+          history.push({
+            pathname: "/register/artists",
+            state: {
+              user: location.state.user,
+              artists: response.data,
+            },
+          });
         });
-      });
     }
   };
 
@@ -46,6 +91,7 @@ function GenrePreferences() {
     if (event.target.style.backgroundColor === "black") {
       newColor = "black";
       newBackground = "white";
+      selectedGenre.pop(event.target.id);
     } else {
       if (event.target.id.length > 0) {
         selectedGenre.push(event.target.id);
@@ -83,11 +129,15 @@ function GenrePreferences() {
         .get("http://localhost:8000/api/tags")
         .then((response) => {
           setGenres(response.data);
+          var receivedGenres = response.data;
+          const data = receivedGenres.map(({ id, name }) => {
+            return { label: name, value: id };
+          });
+          setAllGenres(data);
         })
         .catch(function (error) {
           console.log(error);
-        })
-        .then(function () {});
+        });
     }
   }, [genres]);
 
@@ -115,9 +165,28 @@ function GenrePreferences() {
       mt-8 shadow-2xl overflow-x-hidden overflow-y-scroll"
         >
           <div className="text-center">
-            <p className="text-white xs:text-xl sm:text-xl md:text-2xl xl:text-3xl mb-2">
+          <p className="text-white w-full xs:text-xl mt-2 sm:text-xl md:text-2xl xl:text-3xl mb-2">
               What genres are you listening to?
             </p>
+            <div className="flex justify-center items-center mt-4 mb-4">
+              <Autocomplete
+                multiple
+                size="small"
+                className={classes.root}
+                style={{ width: "50vh" }}
+                options={allGenres}
+                getOptionLabel={(option) => option.label}
+                onChange={(event, value) => setSearchedGenre(value)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    style={{ color: "white" }}
+                    label="Search Genre"
+                    variant="outlined"
+                  />
+                )}
+              />
+            </div>
             <div
               className="grid xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8
           items-center"

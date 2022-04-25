@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, useHistory } from "react-router-dom";
-import { Button } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import Modal from "@mui/material/Modal";
 
@@ -138,7 +137,7 @@ function SongPreferences() {
         }}
       >
         <div>
-          <h3 className="text-2xl sm:text-2xl md:text-2xl font-bold text-gray-200 mt-5">
+          <h3 className="text-2xl sm:text-2xl md:text-2xl text-gray-200 mt-5 mb-1">
             Top Songs For You
           </h3>
           <div
@@ -153,12 +152,12 @@ function SongPreferences() {
           </div>
         </div>
       </div>
-      <Button
+      <button
         onClick={redirect}
         className="bg-white text-black rounded px-2 py-1 flex float-right mr-5 mt-2"
       >
         FINISH
-      </Button>
+      </button>
     </div>
   );
 }
