@@ -42,9 +42,7 @@ function UserNavbar(props) {
     }
   };
 
-  const showProfile = () => {
-    
-  }
+  const showProfile = () => {};
   return (
     <div className="w-full h-10 bg-[#0e7490] fixed z-40">
       <div className=" w-full h-full px-2 flex justify-right items-center">
@@ -70,7 +68,10 @@ function UserNavbar(props) {
           }
         >
           <article className="text-white relative w-screen max-w-[16rem] pb-10 flex flex-col space-y-6 overflow-y-scroll h-full divide-y">
-            <div class="flex mt-5 ml-5 items-center hover:cursor-pointer" onClick={(e) => showProfile()}>
+            <div
+              class="flex mt-5 ml-5 items-center hover:cursor-pointer"
+              onClick={(e) => showProfile()}
+            >
               <Avatar {...stringAvatar()} />
               <header className="p-2 font-bold text-lg">
                 {user ? user.user_name : "My profile"}
@@ -102,7 +103,12 @@ function UserNavbar(props) {
                 <div className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black">
                   <p className="ml-5">Preferences</p>
                 </div>
-                <div className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black">
+                <div
+                  className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black"
+                  onClick={(e) => {
+                    history.push("/logout");
+                  }}
+                >
                   <p className="ml-5">Logout</p>
                 </div>
               </div>

@@ -9,6 +9,7 @@ import TextField from "@material-ui/core/TextField";
 
 const useStyles = makeStyles({
   root: {
+    color: "white",
     "& label": {
       color: "white",
     },
@@ -180,7 +181,6 @@ function GenrePreferences() {
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    style={{ color: "white" }}
                     label="Search Genre"
                     variant="outlined"
                   />
@@ -188,8 +188,8 @@ function GenrePreferences() {
               />
             </div>
             <div
-              className="grid xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8
-          items-center"
+              className="grid xs:grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8
+          content-center"
             >
               {placeGenres()}
             </div>
