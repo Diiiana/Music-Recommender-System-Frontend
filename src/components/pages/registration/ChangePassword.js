@@ -13,6 +13,7 @@ const focusedColor = "black";
 
 const useStyles = makeStyles((theme) => ({
   form: {
+    width: "100%",
     borderRadius: "1em 1em 1em 1em",
     padding: "20px",
   },
@@ -126,7 +127,7 @@ function ChangePassword() {
           noValidate
           id="form"
         >
-          <p>Request Password Reset</p>
+          <p>Change your password</p>
           <div className="mb-4">
             <TextField
               variant="outlined"

@@ -25,16 +25,12 @@ const style = {
 const useStyles = makeStyles((theme) => ({
   form: {
     width: "100%",
-    marginTop: theme.spacing(1),
-    backgroundColor: "white",
     borderRadius: "1em 1em 1em 1em",
     padding: "20px",
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
     background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-    border: 0,
-    borderRadius: 3,
     boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
     color: "white",
     height: 48,
@@ -64,8 +60,12 @@ function ResetPassowrd() {
 
   const [error, setError] = useState("");
   const [userId, setUserId] = useState("");
+
   const [emailValue, setEmailValue] = useState("");
   const [emailError, setEmailError] = useState("");
+
+  const [modalMessage, setModalMessage] = useState("");
+  const [buttonMessage, setButtonMessage] = useState("");
 
   const [open, setOpen] = useState(false);
   const [openError, setOpenError] = useState(false);
@@ -101,12 +101,20 @@ function ResetPassowrd() {
       setEmailError("Invalid email address!");
     } else {
       setEmailError("");
+      setModalMessage("Please wait until your request is being processed!");
+      setButtonMessage("ok");
+      handleOpen();
       axios
         .post(`http://localhost:8000/api/users/reset-password`, {
-          email: emailValue,
+          email: emailValue.email,
         })
         .then((response) => {
           setUserId(response.data);
+          handleClose();
+          setModalMessage(
+            "Please access your email and reset your password by validating your account."
+          );
+          setButtonMessage("Confirm and Login");
           handleOpen();
         })
         .catch((err) => {
@@ -165,10 +173,7 @@ function ResetPassowrd() {
               <Typography variant="h6" component="h2">
                 Email Request
               </Typography>
-              <Typography sx={{ mt: 2 }}>
-                Please access your email and reset your password by validating
-                your account.
-              </Typography>
+              <Typography sx={{ mt: 2 }}>{modalMessage}</Typography>
               <Button
                 type="submit"
                 fullWidth
@@ -177,11 +182,11 @@ function ResetPassowrd() {
                 className={classes.submit}
                 onClick={() => {
                   history.push({
-                    pathname: "/user/changePassword/" + userId
+                    pathname: "/user/changePassword/" + userId,
                   });
                 }}
               >
-                Confirm and Login
+                {buttonMessage}
               </Button>
             </Box>
           </Modal>
