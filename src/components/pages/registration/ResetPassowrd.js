@@ -101,9 +101,6 @@ function ResetPassowrd() {
       setEmailError("Invalid email address!");
     } else {
       setEmailError("");
-      setModalMessage("Please wait until your request is being processed!");
-      setButtonMessage("ok");
-      handleOpen();
       axios
         .post(`http://localhost:8000/api/users/reset-password`, {
           email: emailValue.email,

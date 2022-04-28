@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import UserNavbar from "../../commons/UserNavbar";
+import axios from "axios";
 
 function Dashboard() {
   const history = useHistory();
   const location = useLocation();
+  const [songData, setSongData] = useState([]);
 
   const pushSelectedSong = (id) => {
     history.push({
@@ -12,9 +14,8 @@ function Dashboard() {
     });
   };
 
-  const getSongs = () => {
-    const val = location.state.songs;
-    return val.map((re) => {
+  function mapSongs() {
+    return songData.map((re) => {
       return (
         <div id={re.id}>
           <div
@@ -39,22 +40,46 @@ function Dashboard() {
         </div>
       );
     });
-  };
+  }
+
+  useEffect(() => {
+    if (location.state && location.state.songs) {
+      const val = location.state.songs;
+      setSongData(val);
+    } else {
+      if (songData.length === 0) {
+        axios
+          .get(`http://localhost:8000/api/users/preferences`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          })
+          .then((response) => {
+            setSongData(response.data);
+          })
+          .catch((error) => {
+            console.log(error.response.status)
+          });
+      }
+    }
+  }, []);
 
   return (
     <div className="bg-[#0e7490] h-screen w-full overflow-y-scroll">
-      <UserNavbar title="Dashboard"/>
+      <UserNavbar title="Dashboard" />
       <div style={{ justifyContent: "center" }}>
         <h3 className="text-2xl sm:text-2xl md:text-2xl font-bold text-gray-200 mb-5">
           Dashboard
         </h3>
-        <div
-          className="p-2 grid 
-          grid-cols-1 xs:grid-cols-2 sm:grid-cols-6 md:grid-cols-4 lg:grid-cols-4 
-          xl:grid-cols-8 gap-2"
-        >
-          {getSongs()}
-        </div>
+        {songData.length !== 0 && (
+          <div
+            className="p-2 grid 
+          grid-cols-1 xs:grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 
+          xl:grid-cols-6"
+          >
+            {mapSongs()}
+          </div>
+        )}
       </div>
     </div>
   );

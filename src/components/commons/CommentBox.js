@@ -1,47 +1,158 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@mui/material/TextField";
 import SendIcon from "@mui/icons-material/Send";
 import IconButton from "@mui/material/IconButton";
+import LinearProgress from "@mui/material/LinearProgress";
+import { makeStyles } from "@material-ui/core/styles";
+import axios from "axios";
 
-const data = [
-  { user: "username1", comment: "comm1", date: "2014-10-12" },
-  { user: "username2", comment: "comm2", date: "2016-09-11"  },
-  { user: "u3", comment: "co3", date: "2018-11-22"  },
-];
+const focusedColor = "black";
+const useStyles = makeStyles((theme) => ({
+  form: {
+    borderRadius: "1em 1em 1em 1em",
+    padding: "20px",
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+    border: 0,
+    borderRadius: 3,
+    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
+    color: "white",
+    height: 48,
+    padding: "0 30px",
+  },
+  root: {
+    "& label.Mui-focused": {
+      color: focusedColor,
+    },
+    "& .MuiOutlinedInput-root": {
+      "&.Mui-focused fieldset": {
+        borderColor: focusedColor,
+      },
+    },
+  },
+}));
 
-function CommentBox() {
+function CommentBox(songId) {
+  const classes = useStyles();
+  const [user, setUser] = useState(null);
   const [value, setValue] = useState("");
+  const [comments, setComments] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/songs/comments/" + songId.songId, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
+      .then((response) => {
+        setComments(response.data);
+        axios
+          .get("http://localhost:8000/api/users/user", {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          })
+          .then((response) => {
+            setUser(response.data);
+          });
+      });
+  }, []);
 
   const getComments = () => {
-    return data.map((comm) => {
+    if (comments.length > 0) {
+      return comments.map((comm) => {
+        return (
+          <div className="border-2 px-2 rounded mb-2">
+            <div id={comm.id} className="text-xs">
+              From {comm.user.user_name} {String.fromCharCode(183)}{" "}
+              {comm.timestamp}
+            </div>
+            <div id={comm.id} className="text-md">
+              {comm.comment}
+            </div>
+            {comm.user.id === user.id && (
+              <div className="w-full flex justify-end">
+                <div>
+                  <p className="w-1/2 text-red-600 hover:cursor-pointer">
+                    delete
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      });
+    } else {
       return (
-        <div className="border-2 px-2 rounded mb-2">
-          <div className="text-xs">From {comm.user} {String.fromCharCode(183)} {comm.date}</div>
-          <div className="text-md">{comm.comment}</div>
+        <div className="flex justify-center items-center text-center h-full text-gray-600">
+          No comments
         </div>
       );
-    });
+    }
   };
 
-  const postComment = () => {
-    console.log(value);
+  function appendComment(e) {
+    setValue(e.target.value);
+  }
+
+  const postComment = (e) => {
+    if (value.length > 0) {
+      axios
+        .post(
+          "http://localhost:8000/api/songs/comments/post/" + songId.songId,
+          {
+            comment: value,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          setComments(response.data);
+          setValue("");
+        });
+    }
   };
 
   return (
     <div className="w-full h-full">
-      <div className="w-full h-4/5 p-2">{getComments()}</div>
-      <div>
-        <div className="w-full p-2 flex flex-row">
+      <div className="w-full h-4/5 p-2 overflow-y-scroll">
+        {comments === null || user === null ? (
+          <LinearProgress color="inherit" />
+        ) : (
+          <div>{getComments()}</div>
+        )}
+      </div>
+      <div className="flex items-center w-full">
+        <div className="p-2 w-full flex flex-row ml-4 mr-4">
           <TextField
-            id="standard-basic"
-            label="Comment"
-            variant="standard"
-            style={{ width: "95%" }}
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            type="text"
+            label="comment"
+            name="comment"
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            autoFocus
+            className={classes.root}
+            onChange={(e) => appendComment(e)}
             InputProps={{
               endAdornment: (
-                <IconButton onClick={(e) => postComment()}>
+                <IconButton
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "white",
+                      cursor: "cursor-pointer",
+                      color: "black",
+                    },
+                  }}
+                  onClick={(e) => postComment(e)}
+                >
                   <SendIcon />
                 </IconButton>
               ),

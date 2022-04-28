@@ -33,6 +33,7 @@ function UserHistory() {
                 <img
                   className="block flex-none bg-cover"
                   src={`data:image/jpeg;base64,${s.song.image}`}
+                  alt=""
                 />
               </div>
             </div>
@@ -143,7 +144,7 @@ function UserHistory() {
         </div>
         <div
           id="user-status"
-          className="w-auto h-4/5 bg-gray-100 lg:visible md:visible xs:invisible p-4 mt-2 ml-16 rounded-xl"
+          className="w-auto h-4/5 bg-gray-100 lg:block xs:hidden sm:hidden md:hidden p-4 mt-2 ml-16 rounded-xl"
         >
           <div className="flex justify-center items-center">
             {circleProgress("listened songs", "history", listenedSongs.length)}

@@ -11,14 +11,74 @@ import ThumbDownOutlinedIcon from "@mui/icons-material/ThumbDownOutlined";
 import Modal from "@mui/material/Modal";
 import CommentBox from "../../commons/CommentBox";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+import Button from "@material-ui/core/Button";
+import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import { useHistory } from "react-router-dom";
+import AddBoxIcon from "@mui/icons-material/AddBox";
+import { TextField } from "@mui/material";
+
+const focusedColor = "black";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  boxShadow: 24,
+  p: 4,
+  width: "45vh",
+  bgcolor: "white",
+};
+
+const useStyles = makeStyles((theme) => ({
+  form: {
+    width: "100%",
+    borderRadius: "1em 1em 1em 1em",
+    padding: "20px",
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
+    color: "white",
+    height: 36,
+    padding: "0 30px",
+  },
+  root: {
+    "& label.Mui-focused": {
+      color: focusedColor,
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: focusedColor,
+    },
+    "& .MuiFilledInput-underline:after": {
+      borderBottomColor: focusedColor,
+    },
+    "& .MuiOutlinedInput-root": {
+      "&.Mui-focused fieldset": {
+        borderColor: focusedColor,
+      },
+    },
+  },
+}));
 
 function ViewSong(props) {
   const songId = useParams();
+  const classes = useStyles();
+  const history = useHistory();
+
   const [song, setSong] = useState("");
   const [isLiked, setIsLiked] = useState(-1);
+  const [nameValue, setNameValue] = useState("");
+  const [playlists, setPlaylists] = useState([]);
+  const [selectedPlaylists, setSelectedPlaylists] = useState([]);
+
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [openPlaylistModal, setOpenPlaylistModal] = useState(false);
+  const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
+  const [openCreatePlaylistModal, setOpenCreatePlaylistModal] = useState(false);
 
   useEffect(() => {
     axios
@@ -30,15 +90,251 @@ function ViewSong(props) {
       .then((response) => {
         setSong(response.data.song);
         setIsLiked(response.data.liked.feedback);
+        axios
+          .get("http://localhost:8000/api/users/playlists", {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
+          })
+          .then((response) => {
+            setPlaylists(response.data);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      })
+      .catch(function (error) {
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
+        console.log(error);
+      });
+  }, [songId.id]);
+
+  const dislikeSong = () => {
+    axios
+      .get("http://localhost:8000/api/songs/user-dislike/id/" + songId.id, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
+      .then((response) => {
+        setIsLiked(0);
       })
       .catch(function (error) {
         console.log(error);
       });
-  }, []);
+  };
+
+  const likeSong = () => {
+    axios
+      .get("http://localhost:8000/api/songs/user-like/id/" + songId.id, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
+      .then((response) => {
+        setIsLiked(1);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const handleChange = (e) => {
+    const playlistId = e.target.name;
+    if (selectedPlaylists.indexOf(playlistId) === -1) {
+      selectedPlaylists.push(playlistId);
+      setSelectedPlaylists(selectedPlaylists);
+    } else {
+      selectedPlaylists.pop(playlistId);
+      setSelectedPlaylists(selectedPlaylists);
+    }
+  };
+
+  const saveSongInPlaylists = (e) => {
+    axios
+      .post(
+        "http://localhost:8000/api/users/playlists/save/" + songId.id,
+        {
+          playlists: selectedPlaylists,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        setOpenPlaylistModal(false);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const displayPlaylists = () => {
+    if (playlists.length !== 0) {
+      return playlists.map((playlist) => {
+        return (
+          <div>
+            <input
+              type="checkbox"
+              id={playlist.id}
+              name={playlist.name}
+              value={playlist.name}
+              onChange={(e) => {
+                handleChange({
+                  target: {
+                    name: e.target.id,
+                    value: e.target.checked,
+                  },
+                });
+              }}
+            />
+            {playlist.name}
+            <br />
+          </div>
+        );
+      });
+    } else {
+      return (
+        <div className="text-gray-600 text-md mx-2">
+          <p>No playlists available</p>
+        </div>
+      );
+    }
+  };
+  const checkName = (e) => {
+    var name = e.target.value;
+    setNameValue({ ...nameValue, name });
+  };
+
+  const saveNewPlaylist = () => {
+    axios
+      .post(
+        "http://localhost:8000/api/users/playlists/new",
+        { playlistName: nameValue.name },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        setPlaylists(response.data);
+        setOpenCreatePlaylistModal(false);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
 
   return (
     <div>
-      <UserNavbar />
+      <div>
+        <Modal
+          open={openPlaylistModal}
+          onClose={() => {
+            setOpenPlaylistModal(false);
+          }}
+        >
+          <Box sx={style}>
+            <Typography>Your playlists</Typography>
+            <div>{displayPlaylists()}</div>
+            <div className="grid grid-cols-2">
+              <IconButton
+                sx={{
+                  "&:hover": {
+                    backgroundColor: "white",
+                    cursor: "cursor-pointer",
+                    color: "black",
+                  },
+                }}
+                onClick={(e) => setOpenCreatePlaylistModal(true)}
+              >
+                <AddBoxIcon /> <p className="xs:text-[4vw] sm:text-[2vw] md:text-[2vw]
+                lg:text-[1vw]">CREATE</p>
+              </IconButton>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                onClick={(e) => {
+                  saveSongInPlaylists();
+                }}
+              >
+                Save
+              </Button>
+            </div>
+          </Box>
+        </Modal>
+      </div>
+
+      <div>
+        <Modal
+          open={openCreatePlaylistModal}
+          onClose={() => {
+            setOpenCreatePlaylistModal(false);
+          }}
+        >
+          <Box sx={style}>
+            <Typography>Create playlist</Typography>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="name"
+              label="name"
+              name="name"
+              autoFocus
+              onChange={(e) => checkName(e)}
+              className={classes.root}
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={() => {
+                saveNewPlaylist();
+              }}
+            >
+              Save
+            </Button>
+          </Box>
+        </Modal>
+      </div>
+
+      <div>
+        <Modal open={openUnauthorizedModal}>
+          <Box sx={style}>
+            <Typography>
+              Your session has expired. Please login again.
+            </Typography>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={() => {
+                setOpenUnauthorizedModal(false);
+                history.push({
+                  pathname: "/user/login/",
+                });
+              }}
+            >
+              OK
+            </Button>
+          </Box>
+        </Modal>
+      </div>
+      <UserNavbar title="Listening now" />
       <div class="grid-container grid grid-cols-5">
         <div className="bg-[#2c90ac] to-black h-screen w-full col-span-3 mr-24">
           <div className="bg-white h-screen text-black w-5/6 ml-10">
@@ -109,16 +405,29 @@ function ViewSong(props) {
               </div>
             </div>
             <div>
-              <IconButton sx={{ color: "black" }}>
+              <IconButton sx={{ color: "black" }} onClick={(e) => likeSong()}>
                 {isLiked === 1 ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
               </IconButton>
-              <IconButton sx={{ color: "black" }}>
+              <IconButton
+                sx={{ color: "black" }}
+                onClick={(e) => dislikeSong()}
+              >
                 {isLiked === 0 ? <ThumbDownIcon /> : <ThumbDownOutlinedIcon />}
               </IconButton>
-              <IconButton sx={{ color: "black" }}>
+              <IconButton
+                sx={{ color: "black" }}
+                onClick={(e) => {
+                  setOpenPlaylistModal(true);
+                }}
+              >
                 <PlaylistAddIcon />
               </IconButton>
-              <IconButton className="float-right mr-5" onClick={handleOpen}>
+              <IconButton
+                className="float-right mr-5"
+                onClick={() => {
+                  setOpen(true);
+                }}
+              >
                 <CommentIcon />
               </IconButton>
             </div>
@@ -127,10 +436,10 @@ function ViewSong(props) {
         <div className="w-full col-span-2 mt-10 overflow-y-scroll flex-right">
           <p className="p-2">For you:</p>
           <div class="flex flex-col lg:flex-row rounded h-auto lg:h-32 border shadow-lg">
-            <img
+            {/* <img
               class="block h-auto w-full lg:w-48 flex-none bg-cover"
               src="https://images.pexels.com/photos/1302883/pexels-photo-1302883.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
-            />
+            /> */}
             <div class="bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex justify-left">
               <div class="text-black font-bold text-xl mb-2 leading-tight">
                 ceva piesa si ceva artist
@@ -140,11 +449,11 @@ function ViewSong(props) {
           <div>
             <Modal
               open={open}
-              onClose={handleClose}
+              onClose={() => setOpen(false)}
               className="flex justify-center items-center"
             >
               <div className="bg-white w-2/3 h-4/5">
-                <CommentBox />
+                <CommentBox songId={song.id} />
               </div>
             </Modal>
           </div>

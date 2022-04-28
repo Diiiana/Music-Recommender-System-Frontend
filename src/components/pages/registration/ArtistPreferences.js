@@ -56,25 +56,31 @@ function Artists() {
       handleOpen();
     } else {
       axios
-      .post("http://localhost:8000/api/artists/music", {
-        artists: l,
-        userEmail: location.state.user
-      })
-      .then(function (response) {
-        history.push({
-          pathname: "/register/songs",
-          state: { 
-            user: location.state.user,
-            songs: response.data
-          },
+        .post("http://localhost:8000/api/artists/music", {
+          artists: l,
+          userId: location.state.user,
+        })
+        .then(function (response) {
+          history.push({
+            pathname: "/register/songs",
+            state: {
+              user: location.state.user,
+              songs: response.data,
+            },
+          });
         });
-      });
     }
   };
 
   const handleChange = (e) => {
-    selectedArtists.push(e.target.name);
-    setSelectedArtists(selectedArtists);
+    const artistName = e.target.name;
+    if (selectedArtists.indexOf(artistName) === -1) {
+      selectedArtists.push(e.target.name);
+      setSelectedArtists(selectedArtists);
+    } else {
+      selectedArtists.pop(e.target.name);
+      setSelectedArtists(selectedArtists);
+    }
   };
 
   const showArtists = () => {
@@ -99,9 +105,9 @@ function Artists() {
           {value[1]}
           <br />
         </div>
-      )
+      );
     });
-  }
+  };
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/artists")

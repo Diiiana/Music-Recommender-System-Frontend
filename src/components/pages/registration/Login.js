@@ -11,7 +11,6 @@ import {
 } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import validator from "validator";
 import axios from "axios";
 
 const focusedColor = "black";
@@ -88,7 +87,7 @@ function Login() {
 
             axios
               .get(
-                `http://localhost:8000/api/users/preferences/` + res.data.id,
+                `http://localhost:8000/api/users/preferences`,
                 {
                   headers: {
                     Authorization: `Bearer ${localStorage.getItem(

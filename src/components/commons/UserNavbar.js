@@ -3,11 +3,62 @@ import { MenuIcon } from "@heroicons/react/outline";
 import Avatar from "@mui/material/Avatar";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
+import Button from "@material-ui/core/Button";
+import Modal from "@mui/material/Modal";
+import { makeStyles } from "@material-ui/core/styles";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
+const focusedColor = "black";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  boxShadow: 24,
+  p: 4,
+  width: 300,
+  bgcolor: "white",
+};
+
+const useStyles = makeStyles((theme) => ({
+  form: {
+    width: "100%",
+    borderRadius: "1em 1em 1em 1em",
+    padding: "20px",
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
+    color: "white",
+    height: 48,
+    padding: "0 30px",
+  },
+  root: {
+    "& label.Mui-focused": {
+      color: focusedColor,
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: focusedColor,
+    },
+    "& .MuiFilledInput-underline:after": {
+      borderBottomColor: focusedColor,
+    },
+    "& .MuiOutlinedInput-root": {
+      "&.Mui-focused fieldset": {
+        borderColor: focusedColor,
+      },
+    },
+  },
+}));
 function UserNavbar(props) {
   const history = useHistory();
+  const classes = useStyles();
   const [showSideBar, setShowSideBar] = useState(false);
   const [user, setUser] = useState();
+  const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
 
   const handleClick = () => {
     setShowSideBar(!showSideBar);
@@ -24,7 +75,9 @@ function UserNavbar(props) {
         setUser(response.data);
       })
       .catch(function (error) {
-        console.log(error);
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
       });
   }, []);
 
@@ -45,7 +98,31 @@ function UserNavbar(props) {
   const showProfile = () => {};
   return (
     <div className="w-full h-10 bg-[#0e7490] fixed z-40">
-      <div className=" w-full h-full px-2 flex justify-right items-center">
+      <div>
+        <Modal open={openUnauthorizedModal}>
+          <Box sx={style}>
+            <Typography>
+              Your session has expired. Please login again.
+            </Typography>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={() => {
+                setOpenUnauthorizedModal(false);
+                history.push({
+                  pathname: "/user/login/",
+                });
+              }}
+            >
+              OK
+            </Button>
+          </Box>
+        </Modal>
+      </div>
+      <div className="w-full h-full px-2 flex justify-right items-center">
         <ul className="md:flex text-white cursor-pointer flex justify-right items-center">
           <li onClick={handleClick}>
             <MenuIcon className="w-5 mx-4" />
@@ -67,9 +144,9 @@ function UserNavbar(props) {
             (showSideBar ? " translate-x-0" : " -translate-x-0 ")
           }
         >
-          <article className="text-white relative w-screen max-w-[16rem] pb-10 flex flex-col space-y-6 overflow-y-scroll h-full divide-y">
+          <article className="text-white relative w-screen max-w-[16rem] pb-10 flex flex-col space-y-6 h-full divide-y">
             <div
-              class="flex mt-5 ml-5 items-center hover:cursor-pointer"
+              className="flex mt-5 ml-5 items-center hover:cursor-pointer"
               onClick={(e) => showProfile()}
             >
               <Avatar {...stringAvatar()} />
@@ -81,26 +158,33 @@ function UserNavbar(props) {
               <div className="h-full grid grid-rows-4">
                 <div
                   className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black"
-                  onClick={(e) => history.push("/")}
+                  onClick={(e) => history.push("/dashboard")}
                 >
                   <p className="ml-5">Dashboard</p>
                 </div>
                 <div className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black">
                   <p className="ml-5">Discover</p>
                 </div>
-                <div className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black">
+                <div
+                  className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black"
+                  onClick={(e) => history.push("/playlists")}
+                >
                   <p className="ml-5">Playlists</p>
                 </div>
-                <div className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black">
-                  <p className="ml-5" onClick={(e) => history.push("/history")}>
-                    History
-                  </p>
+                <div
+                  className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black"
+                  onClick={(e) => history.push("/history")}
+                >
+                  <p className="ml-5">History</p>
                 </div>
               </div>
             </div>
             <div>
               <div className="grid grid-rows-2 h-20">
-                <div className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black">
+                <div
+                  className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black"
+                  onClick={(e) => history.push("/preferences")}
+                >
                   <p className="ml-5">Preferences</p>
                 </div>
                 <div
