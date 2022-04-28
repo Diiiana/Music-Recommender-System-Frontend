@@ -17,14 +17,12 @@ function Dashboard() {
   function mapSongs() {
     return songData.map((re) => {
       return (
-        <div id={re.id}>
+        <div key={re.id}>
           <div
             className="group object-contain"
-            id={re.id}
             onClick={() => pushSelectedSong(re.id)}
           >
             <img
-              id={re.id}
               alt=""
               className="block h-32 w-48 rounded object-center object-contain"
               src={`data:image/jpeg;base64,${re.image}`}

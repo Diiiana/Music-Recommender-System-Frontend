@@ -177,7 +177,7 @@ function ViewSong(props) {
     if (playlists.length !== 0) {
       return playlists.map((playlist) => {
         return (
-          <div>
+          <div key={playlist.id}>
             <input
               type="checkbox"
               id={playlist.id}
@@ -335,15 +335,15 @@ function ViewSong(props) {
         </Modal>
       </div>
       <UserNavbar title="Listening now" />
-      <div class="grid-container grid grid-cols-5">
+      <div className="grid-container grid grid-cols-5">
         <div className="bg-[#2c90ac] to-black h-screen w-full col-span-3 mr-24">
           <div className="bg-white h-screen text-black w-5/6 ml-10">
             <div
               className="rounded-lg overflow-hidden bg-transparent 
-            top-1/4 left-1/2 w-full h-2/3"
+            top-1/4 left-1/2 w-full lg:h-2/3"
             >
               <img
-                className="w-full object-fill"
+                className="w-full xs:object-cover lg:object-fill"
                 src={`data:image/png;base64,${song.image}`}
                 alt=""
               />
@@ -435,7 +435,7 @@ function ViewSong(props) {
         </div>
         <div className="w-full col-span-2 mt-10 overflow-y-scroll flex-right">
           <p className="p-2">For you:</p>
-          <div class="flex flex-col lg:flex-row rounded h-auto lg:h-32 border shadow-lg">
+          <div className="flex flex-col lg:flex-row rounded h-auto lg:h-32 border shadow-lg">
             {/* <img
               class="block h-auto w-full lg:w-48 flex-none bg-cover"
               src="https://images.pexels.com/photos/1302883/pexels-photo-1302883.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
