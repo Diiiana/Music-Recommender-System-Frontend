@@ -26,7 +26,7 @@ function Playlists() {
       return playlists.map((playlist) => {
         return (
           <div
-            id={playlist.id}
+            key={playlist.id}
             className="xs:h-24 xs:w-24 sm:h-40 sm:w-40 lg:h-40 lg:w-40 bg-white rounded mx-1 flex justify-center items-center text-center
             hover:-rotate-[5deg] hover:scale-90"
             onClick={(e) => {

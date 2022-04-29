@@ -24,7 +24,6 @@ function Preferences() {
             },
           })
           .then((response) => {
-            console.log(response.data);
             setTags(response.data.tags);
             setArtists(response.data.artists);
           });
@@ -35,7 +34,7 @@ function Preferences() {
     try {
       return artists.map((art) => {
         return (
-          <div>
+          <div key={art.id}>
             <p className="bg-white w-full rounded p-4">{art.name}</p>
           </div>
         );
@@ -49,7 +48,7 @@ function Preferences() {
     try {
       return tags.map((tag) => {
         return (
-          <div>
+          <div key={tag.id}>
             <p className="bg-white w-full rounded p-4">{tag.name}</p>
           </div>
         );

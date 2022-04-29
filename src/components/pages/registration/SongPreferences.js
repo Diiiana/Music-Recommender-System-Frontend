@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation, useHistory } from "react-router-dom";
+import LinearProgress from "@mui/material/LinearProgress";
 import StarIcon from "@mui/icons-material/Star";
 import Modal from "@mui/material/Modal";
+import Alert from "@mui/material/Alert";
 
 function SongPreferences() {
   const history = useHistory();
   const location = useLocation();
+
   const [data, setData] = useState([]);
   const [selectedSongs, setSelectedSongs] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -35,17 +39,19 @@ function SongPreferences() {
     if (selectedSongs.length < 1) {
       handleOpen();
     } else {
+      setIsLoading(true);
       axios
         .post("http://localhost:8000/api/recommendations/", {
           songs: selectedSongs,
           userEmail: location.state.user,
         })
         .then(function (response) {
+          setIsLoading(false);
           history.push({
             pathname: "/dashboard",
             state: {
               user: location.state.user,
-              songs: response.data
+              songs: response.data,
             },
           });
         });
@@ -55,7 +61,7 @@ function SongPreferences() {
   const getSongs = () => {
     return data.map((el) => {
       return (
-        <div className="group object-contain">
+        <div className="group object-contain" key={el.id}>
           <div className="image-container">
             <img src={`data:image/jpeg;base64,${el.image}`} alt="" />
             <div
@@ -115,6 +121,8 @@ function SongPreferences() {
 
   return (
     <div className="bg-[#0e7490] w-full h-screen">
+      {isLoading && <LinearProgress color="inherit" /> }
+
       <Modal
         open={open}
         onClose={handleClose}
@@ -141,7 +149,7 @@ function SongPreferences() {
             Top Songs For You
           </h3>
           <div
-            className="p-10 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-7 gap-2"
+            className="p-2 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-7 gap-2"
             style={{
               overflowX: "hidden",
               overflowY: "scroll",
@@ -158,6 +166,10 @@ function SongPreferences() {
       >
         FINISH
       </button>
+      {isLoading && 
+      <Alert 
+      sx={{width: "30%", float: "right"}}
+      severity="info">Your account is getting ready!</Alert>}
     </div>
   );
 }

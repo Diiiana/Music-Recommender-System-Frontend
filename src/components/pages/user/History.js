@@ -24,6 +24,7 @@ function UserHistory() {
     return data.map((s) => {
       return (
         <div
+          key={s.song.id}
           className="h-32 bg-gray-100 bg-cover rounded overflow-hidden flex mb-2 mt-2 mr-2"
           onClick={(e) => pushSelectedSong(s.song.id)}
         >

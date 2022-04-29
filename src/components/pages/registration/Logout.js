@@ -16,7 +16,7 @@ function Logout() {
         history.push("/user/login");
       });
   });
-  return <div>Logout</div>;
+  return <div className="bg-[#0e7490] "></div>;
 }
 
 export default Logout;

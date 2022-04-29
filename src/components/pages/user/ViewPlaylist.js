@@ -55,7 +55,10 @@ function ViewPlaylist() {
       const s = playlist.songs;
       return s.map((song) => {
         return (
-          <div className="text-white grid grid-cols-2 h-56 md:w-92 lg:w-88 text-center ml-32 mb-2 mt-2">
+          <div
+            key={song.id}
+            className="text-white grid grid-cols-2 h-56 md:w-92 lg:w-88 text-center ml-32 mb-2 mt-2"
+          >
             <Card
               style={{
                 color: "white",

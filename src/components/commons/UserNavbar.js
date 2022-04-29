@@ -162,7 +162,10 @@ function UserNavbar(props) {
                 >
                   <p className="ml-5">Dashboard</p>
                 </div>
-                <div className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black">
+                <div
+                  className="cursor-pointer h-full flex items-center hover:bg-slate-200 hover:text-black"
+                  onClick={(e) => history.push("/discover")}
+                >
                   <p className="ml-5">Discover</p>
                 </div>
                 <div

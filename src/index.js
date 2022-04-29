@@ -18,6 +18,7 @@ import ViewPlaylist from "./components/pages/user/ViewPlaylist";
 import UserHistory from "./components/pages/user/History";
 import Preferences from "./components/pages/user/Preferences";
 import ViewSong from "./components/pages/song/ViewSong";
+import Discover from "./components/pages/user/Discover";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -58,6 +59,7 @@ ReactDOM.render(
         <Route exact path="/playlists" render={() => <Playlists />} />
         <Route exact path="/preferences" render={() => <Preferences />} />
         <Route exact path="/song/view/:id" render={() => <ViewSong />} />
+        <Route extact path="/discover" render={() => <Discover />} />
       </Switch>
     </Router>
   </React.StrictMode>,

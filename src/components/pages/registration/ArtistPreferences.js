@@ -87,7 +87,7 @@ function Artists() {
     var receivedArtists = location.state.artists;
     return receivedArtists.map((value) => {
       return (
-        <div id={value[0]}>
+        <div key={value[0]}>
           <input
             type="checkbox"
             id={value[0]}
@@ -128,8 +128,8 @@ function Artists() {
       <Modal
         open={open}
         onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        ariaLabelledby="modal-modal-title"
+        ariaDescribedby="modal-modal-description"
         className="flex justify-center items-center"
       >
         <p className="bg-white rounded h-30 w-15 px-5 py-5">

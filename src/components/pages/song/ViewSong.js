@@ -89,7 +89,7 @@ function ViewSong(props) {
       })
       .then((response) => {
         setSong(response.data.song);
-        setIsLiked(response.data.liked.feedback);
+        setIsLiked(response.data.liked);
         axios
           .get("http://localhost:8000/api/users/playlists", {
             headers: {
@@ -104,6 +104,7 @@ function ViewSong(props) {
           });
       })
       .catch(function (error) {
+        console.log(error);
         if (error.response.status === 401) {
           setOpenUnauthorizedModal(true);
         }
@@ -253,8 +254,13 @@ function ViewSong(props) {
                 }}
                 onClick={(e) => setOpenCreatePlaylistModal(true)}
               >
-                <AddBoxIcon /> <p className="xs:text-[4vw] sm:text-[2vw] md:text-[2vw]
-                lg:text-[1vw]">CREATE</p>
+                <AddBoxIcon />{" "}
+                <p
+                  className="xs:text-[4vw] sm:text-[2vw] md:text-[2vw]
+                lg:text-[1vw]"
+                >
+                  CREATE
+                </p>
               </IconButton>
               <Button
                 type="submit"
@@ -440,8 +446,8 @@ function ViewSong(props) {
               class="block h-auto w-full lg:w-48 flex-none bg-cover"
               src="https://images.pexels.com/photos/1302883/pexels-photo-1302883.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
             /> */}
-            <div class="bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex justify-left">
-              <div class="text-black font-bold text-xl mb-2 leading-tight">
+            <div className="bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex justify-left">
+              <div className="text-black font-bold text-xl mb-2 leading-tight">
                 ceva piesa si ceva artist
               </div>
             </div>
