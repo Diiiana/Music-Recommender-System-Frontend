@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import IconButton from "@mui/material/IconButton";
 import image1 from "../../assets/images/1.jpg";
 import image2 from "../../assets/images/2.jpg";
-import image3 from "../../assets/images/3.jpg";
 import image4 from "../../assets/images/4.jpg";
 
 let count = 0;
@@ -35,13 +37,16 @@ function Carousel() {
       <div
         style={{
           background: `url(${featuredImages[currentIndex]})  no-repeat center center / cover`,
-          minHeight: "50vh"
+          minHeight: "50vh",
         }}
-      >
-      </div>
+      />
       <div className="absolute w-full top-1/2 transform -translate-y-1/2 flex justify-between items-start px-3">
-        <button onClick={handleOnPrevClick}>aafawref</button>
-        <button onClick={handleOnNextClick}>awfawrfa</button>
+        <IconButton onClick={handleOnPrevClick}>
+          <ArrowBackIosIcon />
+        </IconButton>
+        <IconButton onClick={handleOnNextClick}>
+          <ArrowForwardIosIcon />
+        </IconButton>
       </div>
     </div>
   );
