@@ -24,12 +24,15 @@ function Carousel() {
 
   useEffect(() => {
     startSlider();
-  }, []);
+    return () => {
+      setCurrentIndex(0);
+    };
+  });
 
   const startSlider = () => {
     setInterval(() => {
       handleOnNextClick();
-    }, 5000);
+    }, 3000);
   };
 
   return (
