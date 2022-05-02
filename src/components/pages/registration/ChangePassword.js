@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
@@ -96,11 +96,6 @@ function ChangePassword() {
     } else {
       setPasswordConfError("");
       const id = resetData.id;
-      console.log({
-        userId: id,
-        token: tokenValue.token,
-        password: values.password,
-      });
       axios
         .post("http://localhost:8000/api/users/changePassword", {
           userId: id,

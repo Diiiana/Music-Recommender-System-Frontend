@@ -21,16 +21,19 @@ function ViewPlaylist() {
   const [playlist, setPlaylist] = useState();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/users/playlists/view/" + playlistId.id, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
-      .then((response) => {
-        setPlaylist(response.data);
-      });
-  }, []);
+    const getSongsFromPlaylist = async () => {
+      const { data } = await axios.get(
+        "http://localhost:8000/api/users/playlists/view/" + playlistId.id,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      setPlaylist(data);
+    };
+    getSongsFromPlaylist();
+  }, [playlistId.id]);
 
   const removeSongFromPlaylist = (e) => {
     axios
@@ -57,7 +60,12 @@ function ViewPlaylist() {
         return (
           <div
             key={song.id}
-            className="text-white grid grid-cols-2 h-56 md:w-92 lg:w-88 text-center ml-32 mb-2 mt-2"
+            className="flex items-center text-white text-center mb-2 mt-2 hover:cursor-pointer"
+            onClick={(e) => {
+              history.push({
+                pathname: "/song/view/" + song.id,
+              });
+            }}
           >
             <Card
               style={{
@@ -67,12 +75,13 @@ function ViewPlaylist() {
                   song.image,
                 backgroundSize: "cover",
               }}
+              className="sm:w-2/3 sm:h-48 lg:w-2/3 lg:h-48"
             >
               <CardHeader
                 title={song.song_name}
                 subheader={
                   <Typography sx={{ color: "white" }}>
-                    {song.artist.name}
+                    By {song.artist.name}
                   </Typography>
                 }
                 action={
@@ -101,7 +110,9 @@ function ViewPlaylist() {
   return (
     <div className="w-full h-screen bg-[#2c90ac] overflow-y-scroll">
       <UserNavbar title="Playlists" />
-      <div className="pt-16 w-full h-screen">{displayPlaylist()}</div>
+      <div className="xs:pl-2 sm:pl-8 lg:pl-2/3 pt-16 w-full h-screen">
+        {displayPlaylist()}
+      </div>
     </div>
   );
 }

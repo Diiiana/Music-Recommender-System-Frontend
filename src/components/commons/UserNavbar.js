@@ -65,20 +65,18 @@ function UserNavbar(props) {
   };
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/users/profile", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
-      .then((response) => {
-        setUser(response.data);
-      })
-      .catch(function (error) {
-        if (error.response.status === 401) {
-          setOpenUnauthorizedModal(true);
+    const getUser = async () => {
+      const { data } = await axios.get(
+        "http://localhost:8000/api/users/profile",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
         }
-      });
+      );
+      setUser(data);
+    };
+    getUser();
   }, []);
 
   const stringAvatar = () => {

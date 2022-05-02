@@ -108,19 +108,20 @@ function Artists() {
       );
     });
   };
+  
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/artists")
-      .then(function (response) {
-        var receivedArtists = response.data;
-        const data = receivedArtists.map(({ id, name }) => {
-          return { label: name, value: id };
+    const getArtists = async () => {
+      const { data } = await axios
+        .get("http://localhost:8000/api/artists")
+        .catch(function (error) {
+          console.log(error);
         });
-        setAllArtists(data);
-      })
-      .catch(function (error) {
-        console.log(error);
+      const values = data.map(({ id, name }) => {
+        return { label: name, value: id };
       });
+      setAllArtists(values);
+    };
+    getArtists();
   }, []);
 
   return (

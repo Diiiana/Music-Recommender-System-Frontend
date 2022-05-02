@@ -3,7 +3,7 @@ import React from "react";
 function Footer() {
   return (
     <div name="footer_section" className="-mb-2">
-      <div className="w-full h-64 bg-[#0e7490] grid grid-cols-3">
+      <div className="w-full h-64 bg-[#2c90ac] grid grid-cols-3">
         <div className="flex justify-center items-center">
           <p
             className="w-64 -rotate-90 text-center text-white italic

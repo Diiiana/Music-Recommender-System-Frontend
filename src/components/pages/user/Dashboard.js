@@ -19,12 +19,12 @@ function Dashboard() {
       return (
         <div key={re.id}>
           <div
-            className="group object-contain mx-1"
+            className="group object-contain mx-1 hover:cursor-pointer"
             onClick={() => pushSelectedSong(re.id)}
           >
             <img
               alt=""
-              className="block h-full w-full rounded object-center object-contain"
+              className="block h-32 w-full rounded object-center object-contain"
               src={`data:image/jpeg;base64,${re.image}`}
             />
           </div>
@@ -45,22 +45,20 @@ function Dashboard() {
       const val = location.state.songs;
       setSongData(val);
     } else {
-      if (songData.length === 0) {
-        axios
-          .get(`http://localhost:8000/api/users/preferences`, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          })
-          .then((response) => {
-            setSongData(response.data);
-          })
-          .catch((error) => {
-            console.log(error.response.status)
-          });
-      }
+      axios
+        .get(`http://localhost:8000/api/users/preferences`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
+        .then((response) => {
+          setSongData(response.data);
+        })
+        .catch((error) => {
+          console.log(error.response.status);
+        });
     }
-  }, []);
+  }, [location.state]);
 
   return (
     <div className="bg-[#2c90ac] h-screen w-full overflow-y-scroll">

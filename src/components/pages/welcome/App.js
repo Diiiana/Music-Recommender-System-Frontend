@@ -7,7 +7,7 @@ import Footer from "../../pages/welcome/Footer";
 
 function App() {
   return (
-    <div className="h-screen bg-[#0e7490] w-full">
+    <div className="h-screen bg-[#2c90ac] w-full">
       <Navbar />
       <Hero />
       <About />

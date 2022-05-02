@@ -34,7 +34,7 @@ function Preferences() {
     try {
       return artists.map((art) => {
         return (
-          <div key={art.id}>
+          <div key={art.id} className="hover:cursor-pointer">
             <p className="bg-white w-full rounded p-4">{art.name}</p>
           </div>
         );
@@ -48,7 +48,7 @@ function Preferences() {
     try {
       return tags.map((tag) => {
         return (
-          <div key={tag.id}>
+          <div key={tag.id} className="hover:cursor-pointer">
             <p className="bg-white w-full rounded p-4">{tag.name}</p>
           </div>
         );

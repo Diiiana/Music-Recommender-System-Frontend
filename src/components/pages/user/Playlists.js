@@ -28,7 +28,7 @@ function Playlists() {
           <div
             key={playlist.id}
             className="xs:h-24 xs:w-24 sm:h-40 sm:w-40 lg:h-40 lg:w-40 bg-white rounded mx-1 flex justify-center items-center text-center
-            hover:-rotate-[5deg] hover:scale-90"
+            hover:-rotate-[5deg] hover:scale-90 hover:cursor-pointer"
             onClick={(e) => {
               history.push("playlists/" + playlist.id);
             }}

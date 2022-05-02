@@ -14,7 +14,7 @@ function Hero() {
   };
 
   return (
-    <div name="home_page" className="h-screen bg-[#0e7490] grid grid-cols-2 divide-x py-44 items-center">
+    <div name="home_page" className="h-screen bg-[#2c90ac] grid grid-cols-2 divide-x py-44 items-center">
       <div className="text-center text-xl flex justify-center items-center text-white">
         <div>
           <img

@@ -5,9 +5,11 @@ import { RiAlbumFill } from "react-icons/ri";
 import { BsArrowRightCircle } from "react-icons/bs";
 import { GiFallingStar } from "react-icons/gi";
 import { MdTimeline } from "react-icons/md";
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 
 function DiscoverableSongs() {
+  const history = useHistory();
   const [songs, setSongs] = useState(null);
   const [artists, setArtists] = useState(null);
   const [genres, setGenres] = useState(null);
@@ -17,113 +19,133 @@ function DiscoverableSongs() {
   const [number, setNumber] = useState(7);
 
   useEffect(() => {
-    if (songs === null || genres === null || artists === null) {
-      axios
-        .get("http://localhost:8000/api/songs/by-date", {
+    const getSongsByDate = async () => {
+      const { data } = await axios.get(
+        "http://localhost:8000/api/songs/by-date",
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        })
-        .then((response) => {
-          setSongs(response.data);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      axios
-        .get("http://localhost:8000/api/tags/popularity", {
+        }
+      );
+      setSongs(data);
+      setActive("genres");
+    };
+    const getTagsByPopularity = async () => {
+      const { data } = await axios.get(
+        "http://localhost:8000/api/tags/popularity",
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        })
-        .then((response) => {
-          setActive("genres");
-          setGenres(response.data);
-          displayGenres(response.data);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-      axios
-        .get("http://localhost:8000/api/artists/latest-popular", {
+        }
+      );
+      setGenres(data);
+    };
+    const getArtistsByPopularity = async () => {
+      const { data } = await axios.get(
+        "http://localhost:8000/api/artists/latest-popular",
+        {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        })
-        .then((response) => {
-          setArtists(response.data);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    }
-  });
+        }
+      );
+      setArtists(data);
+    };
+    getSongsByDate();
+    getTagsByPopularity();
+    getArtistsByPopularity();
+  }, []);
 
   const displaySongs = (values) => {
-    const songData = values.slice(0, number).map((s) => (
-      <td key={s.id}>
-        <div
-          style={{
-            color: "white",
-            background:
-              "linear-gradient(rgba(40, 40, 40, 0.85), rgba(40, 40, 40, 0.85)), url(data:image/png;base64," +
-              s.image,
-            backgroundSize: "cover",
-          }}
-          className="text-center rounded lg:w-44 lg:h-44 md:w-44 md:h-44
-          xs:w-40 xs:h-40"
-        >
-          <div className="pt-12">{s.song_name}</div>
-          <div className="pt-2">{s.artist.name}</div>
-        </div>
-      </td>
-    ));
-    setData(songData);
+    if (values !== null) {
+      const songData = values.slice(0, number).map((s) => (
+        <td key={s.id}>
+          <div
+            style={{
+              color: "white",
+              background:
+                "linear-gradient(rgba(40, 40, 40, 0.85), rgba(40, 40, 40, 0.85)), url(data:image/png;base64," +
+                s.image,
+              backgroundSize: "cover",
+            }}
+            className="text-center rounded lg:w-44 lg:h-44 md:w-44 md:h-44
+          xs:w-40 xs:h-40 hover:cursor-pointer"
+            onClick={(e) => {
+              history.push({
+                pathname: "/song/view/" + s.id,
+              });
+            }}
+          >
+            <div className="pt-12">{s.song_name}</div>
+            <div className="pt-2">{s.artist.name}</div>
+          </div>
+        </td>
+      ));
+      setData(songData);
+    }
   };
 
   const displayGenres = (values) => {
-    const genreData = values.slice(0, number).map(
-      (g) =>
-        g.tags__name !== null && (
-          <td key={g.tags__id}>
-            <div
-              className="flex items-center justify-center text-center rounded lg:w-44 lg:h-44 md:w-44 md:h-44
-          xs:w-40 xs:h-40 bg-gray-600"
-            >
-              <div className="grid grid-rows-2 w-full">
-                <div className="text-white">{g.tags__name}</div>
-                <div className="text-white flex items-center text-center justify-center w-full">
-                  <GiFallingStar size={20} />{" "}
-                  <p className="mx-2">{g.popularity}</p>
+    if (values !== null) {
+      const genreData = values.slice(0, number).map(
+        (g) =>
+          g.tags__name !== null && (
+            <td key={g.tags__id}>
+              <div
+                className="flex items-center justify-center text-center rounded lg:w-44 lg:h-44 md:w-44 md:h-44
+          xs:w-40 xs:h-40 bg-gray-600 hover:cursor-pointer hover:bg-gray-500"
+                onClick={(e) => {
+                  history.push({
+                    pathname: "/song/genre/view/" + g.tags__id,
+                  });
+                }}
+              >
+                <div className="grid grid-rows-2 w-full">
+                  <div className="text-white">{g.tags__name}</div>
+                  <div className="text-white flex items-center text-center justify-center w-full">
+                    <GiFallingStar size={20} />{" "}
+                    <p className="mx-2">{g.popularity}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </td>
-        )
-    );
-    setData(genreData);
+            </td>
+          )
+      );
+      setData(genreData);
+    }
   };
 
   const displayArtists = (values) => {
-    const artistData = values.slice(0, number).map((g) => (
-      <td key={g.artist__id}>
-        <div
-          className="flex items-center justify-center text-center rounded lg:w-44 lg:h-44 md:w-44 md:h-44
-          xs:w-40 xs:h-40 bg-gray-600"
-        >
-          <div className="grid grid-rows-3 w-full">
-            <div className="text-white">{g.artist__name}</div>
-            <div className="text-white flex items-center text-center justify-center w-full">
-              <GiFallingStar size={20} /> <p className="mx-2">{g.popularity}</p>
-            </div>
-            <div className="text-white flex items-center text-center justify-center w-full">
-              <MdTimeline size={20} /> <p className="mx-2">{g.release_date}</p>
+    if (values !== null) {
+      const artistData = values.slice(0, number).map((g) => (
+        <td key={g.artist__id}>
+          <div
+            className="flex items-center justify-center text-center rounded lg:w-44 lg:h-44 md:w-44 md:h-44
+          xs:w-40 xs:h-40 bg-gray-600 hover:cursor-pointer hover:bg-gray-500"
+            onClick={(e) => {
+              history.push({
+                pathname: "/song/artist/view/" + g.artist__id,
+              });
+            }}
+          >
+            <div className="grid grid-rows-3 w-full">
+              <div className="text-white">{g.artist__name}</div>
+              <div className="text-white flex items-center text-center justify-center w-full">
+                <GiFallingStar size={20} />{" "}
+                <p className="mx-2">{g.popularity}</p>
+              </div>
+              <div className="text-white flex items-center text-center justify-center w-full">
+                <MdTimeline size={20} />{" "}
+                <p className="mx-2">{g.release_date}</p>
+              </div>
             </div>
           </div>
-        </div>
-      </td>
-    ));
-    setData(artistData);
+        </td>
+      ));
+      setData(artistData);
+    }
   };
 
   const loadMore = (e) => {
@@ -146,9 +168,10 @@ function DiscoverableSongs() {
     <div className="grid xs:grid-cols-2 lg:grid-cols-9 md:grid-cols-5 h-full text">
       <div className="bg-red max-w-32 lg:w-44 md:w-44 sm:w-24 h-full col-span-1 bg-transparent">
         <div className="grid grid-rows-3 w-full h-full">
+          {data.length === 0 && displayGenres(genres)}
           <div className="w-full h-full flex items-center">
             <button
-              className="w-full h-1/2 flex items-center mx-2 bg-[#0e7490]
+              className="w-full h-1/2 flex items-center mx-2 bg-[#2c90ac]
             hover:bg-gray-600"
             >
               <div className="ml-2 text-white">

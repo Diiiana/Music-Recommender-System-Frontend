@@ -41,33 +41,35 @@ function CommentBox(songId) {
   const [comments, setComments] = useState(null);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/songs/comments/" + songId.songId, {
+    const getCommentsForSong = async () => {
+      const { data } = await axios.get(
+        "http://localhost:8000/api/songs/comments/" + songId.songId,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      );
+      setComments(data);
+    };
+    const getLoggedUser = async () => {
+      const { data } = await axios.get("http://localhost:8000/api/users/user", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
-      })
-      .then((response) => {
-        setComments(response.data);
-        axios
-          .get("http://localhost:8000/api/users/user", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          })
-          .then((response) => {
-            setUser(response.data);
-          });
       });
-  }, []);
+      setUser(data);
+    };
+
+    getCommentsForSong();
+    getLoggedUser();
+  }, [songId.songId]);
 
   const getComments = () => {
-    if (comments !== null && comments !== []) {
+    if (comments !== null && comments.length !== 0) {
       return comments.map((comm) => {
         return (
-          <div 
-          key={comm.id}
-          className="border-2 px-2 rounded mb-2">
+          <div key={comm.id} className="border-2 px-2 rounded mb-2">
             <div id={comm.id} className="text-xs">
               From {comm.user.user_name} {String.fromCharCode(183)}{" "}
               {comm.timestamp}

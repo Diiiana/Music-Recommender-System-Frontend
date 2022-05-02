@@ -125,22 +125,20 @@ function GenrePreferences() {
   };
 
   useEffect(() => {
-    if (genres.length === 0) {
-      axios
+    const getGenres = async () => {
+      const { data } = await axios
         .get("http://localhost:8000/api/tags")
-        .then((response) => {
-          setGenres(response.data);
-          var receivedGenres = response.data;
-          const data = receivedGenres.map(({ id, name }) => {
-            return { label: name, value: id };
-          });
-          setAllGenres(data);
-        })
         .catch(function (error) {
           console.log(error);
         });
-    }
-  }, [genres]);
+      setGenres(data);
+      const values = data.map(({ id, name }) => {
+        return { label: name, value: id };
+      });
+      setAllGenres(values);
+    };
+    getGenres();
+  }, []);
 
   return (
     <div className="bg-[#2c90ac] h-screen w-full flex flex-center overflow-hidden">
@@ -166,7 +164,7 @@ function GenrePreferences() {
       mt-8 shadow-2xl overflow-x-hidden overflow-y-scroll"
         >
           <div className="text-center">
-          <p className="text-white w-full xs:text-xl mt-2 sm:text-xl md:text-2xl xl:text-3xl mb-2">
+            <p className="text-white w-full xs:text-xl mt-2 sm:text-xl md:text-2xl xl:text-3xl mb-2">
               What genres are you listening to?
             </p>
             <div className="flex justify-center items-center mt-4 mb-4">
