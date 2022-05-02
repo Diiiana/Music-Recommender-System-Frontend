@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import IconButton from "@mui/material/IconButton";
@@ -20,19 +20,6 @@ function Carousel() {
     const productsLength = featuredImages.length;
     count = (currentIndex + productsLength - 1) % productsLength;
     setCurrentIndex(count);
-  };
-
-  useEffect(() => {
-    startSlider();
-    return () => {
-      setCurrentIndex(0);
-    };
-  });
-
-  const startSlider = () => {
-    setInterval(() => {
-      handleOnNextClick();
-    }, 3000);
   };
 
   return (

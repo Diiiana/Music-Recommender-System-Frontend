@@ -143,7 +143,7 @@ function GenrePreferences() {
   }, [genres]);
 
   return (
-    <div className="bg-[#0e7490] h-screen w-full flex flex-center overflow-hidden">
+    <div className="bg-[#2c90ac] h-screen w-full flex flex-center overflow-hidden">
       <Modal
         open={open}
         onClose={handleClose}

@@ -170,7 +170,7 @@ function UserHistory() {
               <Legend />
               <Line
                 type="monotone"
-                dataKey="total"
+                dataKey="activity"
                 stroke="black"
                 strokeDasharray="3 4 5 2"
               />

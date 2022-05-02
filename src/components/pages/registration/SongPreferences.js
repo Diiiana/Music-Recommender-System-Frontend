@@ -120,7 +120,7 @@ function SongPreferences() {
   }, [location.state.songs]);
 
   return (
-    <div className="bg-[#0e7490] w-full h-screen">
+    <div className="bg-[#2c90ac] w-full h-screen">
       {isLoading && <LinearProgress color="inherit" /> }
 
       <Modal

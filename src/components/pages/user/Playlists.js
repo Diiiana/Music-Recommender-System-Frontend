@@ -44,7 +44,7 @@ function Playlists() {
   };
 
   return (
-    <div className="w-full h-screen bg-[#0e7490]">
+    <div className="w-full h-screen bg-[#2c90ac]">
       <UserNavbar title="Playlists" />
       <div
         className="pt-16 w-full h-screen grid xs:grid-cols-3 sm:grid-cols-4

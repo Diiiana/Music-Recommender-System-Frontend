@@ -5,7 +5,7 @@ import DiscoverableSongs from "../song/DiscoverableSongs";
 
 function Discover() {
   return (
-    <div className="w-full h-screen bg-[#0e7490] overflow-hidden">
+    <div className="w-full h-screen bg-[#2c90ac] overflow-hidden">
       <UserNavbar title="Discover" />
       <div className="mt-12">
         <Carousel />

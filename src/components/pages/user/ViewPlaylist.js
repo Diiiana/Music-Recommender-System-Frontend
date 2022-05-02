@@ -99,7 +99,7 @@ function ViewPlaylist() {
   };
 
   return (
-    <div className="w-full h-screen bg-[#0e7490] overflow-y-scroll">
+    <div className="w-full h-screen bg-[#2c90ac] overflow-y-scroll">
       <UserNavbar title="Playlists" />
       <div className="pt-16 w-full h-screen">{displayPlaylist()}</div>
     </div>

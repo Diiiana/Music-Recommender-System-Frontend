@@ -9,7 +9,7 @@ function Navbar() {
   };
 
   return (
-    <div className="w-screen h-10 bg-[#0e7490] fixed z-40">
+    <div className="w-screen h-10 bg-[#2c90ac] fixed z-40">
       <div className=" w-full h-full px-2 flex justify-center items-center">
         <div className="flex items-center">
           <ul className="hidden md:flex text-white cursor-pointer">
@@ -52,7 +52,7 @@ function Navbar() {
         className={
           !showMobileMenu
             ? "hidden"
-            : "absolute bg-[#0e7490] w-full p-8 text-black z-40"
+            : "absolute bg-[#2c90ac] w-full p-8 text-black z-40"
         }
       >
         <li className="hover:bg-gray-200 cursor-pointer">

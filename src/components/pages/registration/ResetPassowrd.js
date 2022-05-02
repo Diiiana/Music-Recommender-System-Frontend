@@ -123,7 +123,7 @@ function ResetPassowrd() {
   };
 
   return (
-    <div className="bg-[#0e7490] flex h-screen justify-center items-center">
+    <div className="bg-[#2c90ac] flex h-screen justify-center items-center">
       <Modal
         open={openError}
         onClose={handleCloseError}

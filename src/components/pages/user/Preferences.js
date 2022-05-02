@@ -59,7 +59,7 @@ function Preferences() {
   };
 
   return (
-    <div className="w-full h-screen bg-cover bg-[#0e7490] overflow-y-scroll">
+    <div className="w-full h-screen bg-cover bg-[#2c90ac] overflow-y-scroll">
       <UserNavbar title="Preferences" />
       {user === null || artists === null || tags === null ? (
         <div className="w-full h-screen flex items-center justify-center">

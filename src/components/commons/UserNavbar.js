@@ -97,7 +97,7 @@ function UserNavbar(props) {
 
   const showProfile = () => {};
   return (
-    <div className="w-full h-10 bg-[#0e7490] fixed z-40">
+    <div className="w-full h-10 bg-[#2c90ac] fixed z-40">
       <div>
         <Modal open={openUnauthorizedModal}>
           <Box sx={style}>
@@ -140,7 +140,7 @@ function UserNavbar(props) {
       >
         <section
           className={
-            " w-screen max-w-[16rem] left-0 absolute bg-[#0e7490] h-full shadow-xl" +
+            " w-screen max-w-[16rem] left-0 absolute bg-[#2c90ac] h-full shadow-xl" +
             (showSideBar ? " translate-x-0" : " -translate-x-0 ")
           }
         >

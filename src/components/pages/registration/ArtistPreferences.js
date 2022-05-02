@@ -124,7 +124,7 @@ function Artists() {
   }, []);
 
   return (
-    <div className="bg-[#0e7490] h-screen w-full">
+    <div className="bg-[#2c90ac] h-screen w-full">
       <Modal
         open={open}
         onClose={handleClose}

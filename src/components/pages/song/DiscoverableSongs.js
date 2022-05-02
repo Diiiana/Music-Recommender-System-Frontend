@@ -8,53 +8,55 @@ import { MdTimeline } from "react-icons/md";
 import axios from "axios";
 
 function DiscoverableSongs() {
-  const [songs, setSongs] = useState([]);
-  const [artists, setArtists] = useState([]);
-  const [genres, setGenres] = useState([]);
+  const [songs, setSongs] = useState(null);
+  const [artists, setArtists] = useState(null);
+  const [genres, setGenres] = useState(null);
 
   const [data, setData] = useState([]);
   const [active, setActive] = useState("");
   const [number, setNumber] = useState(7);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/songs/by-date", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
-      .then((response) => {
-        setSongs(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    axios
-      .get("http://localhost:8000/api/tags/popularity", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
-      .then((response) => {
-        setActive("genres");
-        setGenres(response.data);
-        displayGenres(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-    axios
-      .get("http://localhost:8000/api/artists/latest-popular", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
-      .then((response) => {
-        setArtists(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    if (songs === null || genres === null || artists === null) {
+      axios
+        .get("http://localhost:8000/api/songs/by-date", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
+        .then((response) => {
+          setSongs(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      axios
+        .get("http://localhost:8000/api/tags/popularity", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
+        .then((response) => {
+          setActive("genres");
+          setGenres(response.data);
+          displayGenres(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+      axios
+        .get("http://localhost:8000/api/artists/latest-popular", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
+        .then((response) => {
+          setArtists(response.data);
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
   });
 
   const displaySongs = (values) => {

@@ -62,10 +62,12 @@ function CommentBox(songId) {
   }, []);
 
   const getComments = () => {
-    if (comments.length > 0) {
+    if (comments !== null && comments !== []) {
       return comments.map((comm) => {
         return (
-          <div className="border-2 px-2 rounded mb-2">
+          <div 
+          key={comm.id}
+          className="border-2 px-2 rounded mb-2">
             <div id={comm.id} className="text-xs">
               From {comm.user.user_name} {String.fromCharCode(183)}{" "}
               {comm.timestamp}
