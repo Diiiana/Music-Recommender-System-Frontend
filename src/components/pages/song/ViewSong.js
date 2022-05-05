@@ -8,6 +8,7 @@ import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import CommentIcon from "@mui/icons-material/Comment";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownOutlinedIcon from "@mui/icons-material/ThumbDownOutlined";
+import LinearProgress from "@mui/material/LinearProgress";
 import Modal from "@mui/material/Modal";
 import CommentBox from "../../commons/CommentBox";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
@@ -70,12 +71,14 @@ function ViewSong(props) {
   const history = useHistory();
 
   const [song, setSong] = useState("");
+  const [tagDisplay, sedTagDisplay] = useState([]);
   const [isLiked, setIsLiked] = useState(-1);
   const [nameValue, setNameValue] = useState("");
   const [playlists, setPlaylists] = useState([]);
   const [selectedPlaylists, setSelectedPlaylists] = useState([]);
 
   const [open, setOpen] = useState(false);
+  const [recommended, setRecommended] = useState(null);
   const [openPlaylistModal, setOpenPlaylistModal] = useState(false);
   const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
   const [openCreatePlaylistModal, setOpenCreatePlaylistModal] = useState(false);
@@ -90,6 +93,23 @@ function ViewSong(props) {
       .then((response) => {
         setSong(response.data.song);
         setIsLiked(response.data.liked);
+        if (
+          response.data.song &&
+          response.data.song.tags &&
+          response.data.song.tags.length > 0
+        ) {
+          const d = response.data.song.tags.map((t) => {
+            return (
+              <p
+                key={t.id}
+                className="hover:cursor-pointer text-xs uppercase inline-block mx-1 mt-2 mb-2 p-1 bg-gray-200"
+              >
+                {t.name}
+              </p>
+            );
+          });
+          sedTagDisplay(d);
+        }
         axios
           .get("http://localhost:8000/api/users/playlists", {
             headers: {
@@ -109,6 +129,17 @@ function ViewSong(props) {
           setOpenUnauthorizedModal(true);
         }
         console.log(error);
+      });
+    axios
+      .get("http://localhost:8000/api/recommendations/similar/" + songId.id, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        const recommendedSongs = response.data;
+        setRecommended(recommendedSongs);
       });
   }, [songId.id]);
 
@@ -232,7 +263,7 @@ function ViewSong(props) {
   };
 
   return (
-    <div>
+    <div className=" overflow-y-hidden">
       <div>
         <Modal
           open={openPlaylistModal}
@@ -342,11 +373,11 @@ function ViewSong(props) {
       </div>
       <UserNavbar title="Listening now" />
       <div className="grid-container grid grid-cols-5">
-        <div className="bg-[#2c90ac] to-black h-screen w-full col-span-3 mr-24">
+        <div className="bg-[#2c90ac] to-black h-screen w-full col-span-3 mr-24  overflow-y-hidden">
           <div className="bg-white h-screen text-black w-5/6 ml-10">
             <div
               className="rounded-lg overflow-hidden bg-transparent 
-            top-1/4 left-1/2 w-full lg:h-2/3"
+            top-1/4 left-1/2 w-full lg:h-1/2"
             >
               <img
                 className="w-full xs:object-cover lg:object-fill"
@@ -354,7 +385,6 @@ function ViewSong(props) {
                 alt=""
               />
             </div>
-
             <div className="w-full mt-2 bg-transparent text-black rounded-lg shadow-lg overflow-hidden">
               <div className="mx-3">
                 <h1>{song.song_name}</h1>
@@ -437,20 +467,41 @@ function ViewSong(props) {
                 <CommentIcon />
               </IconButton>
             </div>
+            <hr />
+            <div>
+              <div className="mx-2 mt-2">Details</div>
+              {tagDisplay}
+            </div>
           </div>
         </div>
-        <div className="w-full col-span-2 mt-10 overflow-y-scroll flex-right">
+        <div className="w-full col-span-2 mt-10 flex-right overflow-y-scroll">
+          {recommended === null && <LinearProgress color="inherit" />}
           <p className="p-2">For you:</p>
-          <div className="flex flex-col lg:flex-row rounded h-auto lg:h-32 border shadow-lg">
-            {/* <img
-              class="block h-auto w-full lg:w-48 flex-none bg-cover"
-              src="https://images.pexels.com/photos/1302883/pexels-photo-1302883.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
-            /> */}
-            <div className="bg-white rounded-b lg:rounded-b-none lg:rounded-r p-4 flex justify-left">
-              <div className="text-black font-bold text-xl mb-2 leading-tight">
-                ceva piesa si ceva artist
-              </div>
-            </div>
+          <div className="h-4/5 lg:h-32">
+            {recommended !== null &&
+              recommended.map((s) => {
+                return (
+                  <div
+                    key={s.id}
+                    className="grid grid-cols-4 mt-2 mb-2 shadow-lg hover:cursor-pointer hover:bg-gray-50"
+                    onClick={(e) => {
+                      history.push({
+                        pathname: "/song/view/" + s.id,
+                      });
+                    }}
+                  >
+                    <img
+                      className="block h-auto w-48 lg:w-48 flex-none bg-cover col-span-1"
+                      src={`data:image/jpeg;base64,${s.image}`}
+                      alt=""
+                    />
+                    <div className="p-2 col-span-3 w-full">
+                      <p>{s.song_name}</p>
+                      <p>{s.artist.name}</p>
+                    </div>
+                  </div>
+                );
+              })}
           </div>
           <div>
             <Modal

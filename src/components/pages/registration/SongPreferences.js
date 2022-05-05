@@ -43,7 +43,7 @@ function SongPreferences() {
       axios
         .post("http://localhost:8000/api/recommendations/", {
           songs: selectedSongs,
-          userEmail: location.state.user,
+          userId: location.state.user,
         })
         .then(function (response) {
           setIsLoading(false);
