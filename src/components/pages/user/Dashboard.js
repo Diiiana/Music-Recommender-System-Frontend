@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import UserNavbar from "../../commons/UserNavbar";
+import { Button } from "@mui/material";
+import { HOST } from "../../commons/Hosts";
 import axios from "axios";
 
 function Dashboard() {
@@ -46,7 +48,7 @@ function Dashboard() {
       setSongData(val);
     } else {
       axios
-        .get(`http://localhost:8000/api/users/preferences`, {
+        .get(HOST.backend_api + `users/preferences`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
@@ -76,6 +78,23 @@ function Dashboard() {
             {mapSongs()}
           </div>
         )}
+        <div className="flex justify-center items-center mt-10 mb-6">
+          <Button
+          // onClick={loadMore}
+          >
+            <svg className="animate-bounce w-6 h-6">
+              <svg
+                className="w-6 h-6 mx-auto"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="white"
+              >
+                <path strokeWidth="2" d="M19 13l-7 7-7-7m14-8l-7 7-7-7" />
+              </svg>
+            </svg>
+          </Button>
+        </div>
       </div>
     </div>
   );

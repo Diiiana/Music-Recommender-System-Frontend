@@ -7,6 +7,7 @@ import { GiFallingStar } from "react-icons/gi";
 import { MdTimeline } from "react-icons/md";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
+import { HOST } from "../../commons/Hosts";
 
 function DiscoverableSongs() {
   const history = useHistory();
@@ -20,31 +21,25 @@ function DiscoverableSongs() {
 
   useEffect(() => {
     const getSongsByDate = async () => {
-      const { data } = await axios.get(
-        "http://localhost:8000/api/songs/by-date",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
+      const { data } = await axios.get(HOST.backend_api + "songs/by-date", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
       setSongs(data);
       setActive("genres");
     };
     const getTagsByPopularity = async () => {
-      const { data } = await axios.get(
-        "http://localhost:8000/api/tags/popularity",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
+      const { data } = await axios.get(HOST.backend_api + "tags/popularity", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
       setGenres(data);
     };
     const getArtistsByPopularity = async () => {
       const { data } = await axios.get(
-        "http://localhost:8000/api/artists/latest-popular",
+        HOST.backend_api + "artists/latest-popular",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,

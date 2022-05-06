@@ -5,6 +5,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import StarIcon from "@mui/icons-material/Star";
 import Modal from "@mui/material/Modal";
 import Alert from "@mui/material/Alert";
+import { HOST } from "../../commons/Hosts";
 
 function SongPreferences() {
   const history = useHistory();
@@ -41,7 +42,7 @@ function SongPreferences() {
     } else {
       setIsLoading(true);
       axios
-        .post("http://localhost:8000/api/recommendations/", {
+        .post(HOST.backend_api + "recommendations/", {
           songs: selectedSongs,
           userId: location.state.user,
         })

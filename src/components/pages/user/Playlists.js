@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import UserNavbar from "../../commons/UserNavbar";
+import { HOST } from "../../commons/Hosts";
 import axios from "axios";
 
 function Playlists() {
@@ -9,7 +10,7 @@ function Playlists() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/users/playlists", {
+      .get(HOST.backend_api + "users/playlists", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },

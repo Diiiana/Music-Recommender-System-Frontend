@@ -1,13 +1,14 @@
 import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
+import { HOST } from "../../commons/Hosts";
 
 function Logout() {
   const history = useHistory();
 
   useEffect(() => {
     axios
-      .post("http://localhost:8000/api/users/logout/blacklist", {
+      .post(HOST.backend_api + "users/logout/blacklist", {
         refresh_token: localStorage.getItem("refresh_token"),
       })
       .then((response) => {

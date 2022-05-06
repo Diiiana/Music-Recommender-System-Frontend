@@ -3,40 +3,15 @@ import { useLocation, useHistory } from "react-router-dom";
 import Modal from "@mui/material/Modal";
 import { Button } from "@mui/material";
 import axios from "axios";
-import { makeStyles } from "@mui/styles";
+import { useButtonWhiteStyles } from "../../commons/Constants";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
-
-const useStyles = makeStyles({
-  root: {
-    color: "white",
-    "& label": {
-      color: "white",
-    },
-    "& label.Mui-focused": {
-      color: "white",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "white",
-    },
-    "& .MuiFilledInput-underline:after": {
-      borderBottomColor: "white",
-    },
-    "& .MuiOutlinedInput-root": {
-      "&.Mui-focused fieldset": {
-        borderColor: "white",
-      },
-      "& fieldset": {
-        borderColor: "white",
-      },
-    },
-  },
-});
+import { HOST } from "../../commons/Hosts";
 
 function GenrePreferences() {
-  const classes = useStyles();
   const history = useHistory();
   const location = useLocation();
+  const classes = useButtonWhiteStyles();
 
   const [open, setOpen] = useState(false);
   const [number, setNumber] = useState(84);
@@ -69,7 +44,7 @@ function GenrePreferences() {
       handleOpen();
     } else {
       axios
-        .post("http://localhost:8000/api/tags/user", {
+        .post(HOST.backend_api + "tags/user", {
           userId: location.state.user,
           genres: l,
         })
@@ -127,7 +102,7 @@ function GenrePreferences() {
   useEffect(() => {
     const getGenres = async () => {
       const { data } = await axios
-        .get("http://localhost:8000/api/tags")
+        .get(HOST.backend_api + "tags")
         .catch(function (error) {
           console.log(error);
         });

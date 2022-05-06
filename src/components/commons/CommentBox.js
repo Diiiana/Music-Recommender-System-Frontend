@@ -3,39 +3,12 @@ import TextField from "@mui/material/TextField";
 import SendIcon from "@mui/icons-material/Send";
 import IconButton from "@mui/material/IconButton";
 import LinearProgress from "@mui/material/LinearProgress";
-import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
-
-const focusedColor = "black";
-const useStyles = makeStyles((theme) => ({
-  form: {
-    borderRadius: "1em 1em 1em 1em",
-    padding: "20px",
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-    border: 0,
-    borderRadius: 3,
-    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
-    color: "white",
-    height: 48,
-    padding: "0 30px",
-  },
-  root: {
-    "& label.Mui-focused": {
-      color: focusedColor,
-    },
-    "& .MuiOutlinedInput-root": {
-      "&.Mui-focused fieldset": {
-        borderColor: focusedColor,
-      },
-    },
-  },
-}));
+import { useButtonStyles } from "../commons/Constants";
+import { HOST } from "../commons/Hosts";
 
 function CommentBox(songId) {
-  const classes = useStyles();
+  const classes = useButtonStyles();
   const [user, setUser] = useState(null);
   const [value, setValue] = useState("");
   const [comments, setComments] = useState(null);
@@ -43,7 +16,7 @@ function CommentBox(songId) {
   useEffect(() => {
     const getCommentsForSong = async () => {
       const { data } = await axios.get(
-        "http://localhost:8000/api/songs/comments/" + songId.songId,
+        HOST.backend_api + "songs/comments/" + songId.songId,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -53,7 +26,7 @@ function CommentBox(songId) {
       setComments(data);
     };
     const getLoggedUser = async () => {
-      const { data } = await axios.get("http://localhost:8000/api/users/user", {
+      const { data } = await axios.get(HOST.backend_api + "users/user", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -106,7 +79,7 @@ function CommentBox(songId) {
     if (value.length > 0) {
       axios
         .post(
-          "http://localhost:8000/api/songs/comments/post/" + songId.songId,
+          HOST.backend_api + "songs/comments/post/" + songId.songId,
           {
             comment: value,
           },

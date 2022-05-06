@@ -7,38 +7,14 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import TextField from "@material-ui/core/TextField";
 import validator from "validator";
-import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
-
-const useStyles = makeStyles((theme) => ({
-  form: {
-    borderRadius: "1em 1em 1em 1em",
-    padding: "20px",
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
-    color: "white",
-    height: 48,
-    padding: "0 30px",
-  },
-  root: {
-    "& label.Mui-focused": {
-      color: "black",
-    },
-    "& .MuiOutlinedInput-root": {
-      "&.Mui-focused fieldset": {
-        borderColor: "black",
-      },
-    },
-  },
-}));
+import { useButtonStyles } from "../../commons/Constants";
+import { HOST } from "../../commons/Hosts";
 
 function Register() {
-  const classes = useStyles();
   const history = useHistory();
+  const classes = useButtonStyles();
   const [passwordConfirmError, setPasswordConfError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [emailValue, setEmailValue] = useState("");
@@ -118,7 +94,7 @@ function Register() {
           } else {
             setEmailError("");
             axios
-              .post(`http://localhost:8000/api/users/register`, {
+              .post(HOST.backend_api + `users/register`, {
                 email: emailValue.email,
                 user_name: usernameValue.username,
                 password: values.password,

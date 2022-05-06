@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import axios from "axios";
 import IconButton from "@material-ui/core/IconButton";
@@ -8,45 +7,11 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import TextField from "@material-ui/core/TextField";
 import { useHistory, useParams } from "react-router-dom";
-
-const focusedColor = "black";
-
-const useStyles = makeStyles((theme) => ({
-  form: {
-    width: "100%",
-    borderRadius: "1em 1em 1em 1em",
-    padding: "20px",
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-    border: 0,
-    borderRadius: 3,
-    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
-    color: "white",
-    height: 48,
-    padding: "0 30px",
-  },
-  root: {
-    "& label.Mui-focused": {
-      color: focusedColor,
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: focusedColor,
-    },
-    "& .MuiFilledInput-underline:after": {
-      borderBottomColor: focusedColor,
-    },
-    "& .MuiOutlinedInput-root": {
-      "&.Mui-focused fieldset": {
-        borderColor: focusedColor,
-      },
-    },
-  },
-}));
+import { useButtonStyles } from "../../commons/Constants";
+import { HOST } from "../../commons/Hosts";
 
 function ChangePassword() {
-  const classes = useStyles();
+  const classes = useButtonStyles();
   const history = useHistory();
   const resetData = useParams();
   const [tokenValue, setTokenValue] = useState("");
@@ -97,20 +62,19 @@ function ChangePassword() {
       setPasswordConfError("");
       const id = resetData.id;
       axios
-        .post("http://localhost:8000/api/users/changePassword", {
+        .post(HOST.backend_api + "users/changePassword", {
           userId: id,
           token: tokenValue.token,
           password: values.password,
         })
-        .then(
-          (response) => {
-            history.push({
-              pathname: "/user/login",
-            });
-          },
-        ).catch(error => {
-          console.log(error.response)
+        .then((response) => {
+          history.push({
+            pathname: "/user/login",
+          });
         })
+        .catch((error) => {
+          console.log(error.response);
+        });
     }
   };
 

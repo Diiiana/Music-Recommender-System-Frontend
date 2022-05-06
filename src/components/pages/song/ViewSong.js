@@ -13,14 +13,13 @@ import Modal from "@mui/material/Modal";
 import CommentBox from "../../commons/CommentBox";
 import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
 import Button from "@material-ui/core/Button";
-import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useHistory } from "react-router-dom";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { TextField } from "@mui/material";
-
-const focusedColor = "black";
+import { useButtonStyles } from "../../commons/Constants";
+import { HOST } from "../../commons/Hosts";
 
 const style = {
   position: "absolute",
@@ -33,42 +32,10 @@ const style = {
   bgcolor: "white",
 };
 
-const useStyles = makeStyles((theme) => ({
-  form: {
-    width: "100%",
-    borderRadius: "1em 1em 1em 1em",
-    padding: "20px",
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
-    color: "white",
-    height: 36,
-    padding: "0 30px",
-  },
-  root: {
-    "& label.Mui-focused": {
-      color: focusedColor,
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: focusedColor,
-    },
-    "& .MuiFilledInput-underline:after": {
-      borderBottomColor: focusedColor,
-    },
-    "& .MuiOutlinedInput-root": {
-      "&.Mui-focused fieldset": {
-        borderColor: focusedColor,
-      },
-    },
-  },
-}));
-
 function ViewSong(props) {
   const songId = useParams();
-  const classes = useStyles();
   const history = useHistory();
+  const classes = useButtonStyles();
 
   const [song, setSong] = useState("");
   const [tagDisplay, sedTagDisplay] = useState([]);
@@ -85,7 +52,7 @@ function ViewSong(props) {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/songs/id/" + songId.id, {
+      .get(HOST.backend_api + "songs/id/" + songId.id, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -111,7 +78,7 @@ function ViewSong(props) {
           sedTagDisplay(d);
         }
         axios
-          .get("http://localhost:8000/api/users/playlists", {
+          .get(HOST.backend_api + "users/playlists", {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
@@ -131,13 +98,12 @@ function ViewSong(props) {
         console.log(error);
       });
     axios
-      .get("http://localhost:8000/api/recommendations/similar/" + songId.id, {
+      .get(HOST.backend_api + "recommendations/similar/" + songId.id, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
       })
       .then((response) => {
-        console.log(response.data);
         const recommendedSongs = response.data;
         setRecommended(recommendedSongs);
       });
@@ -145,7 +111,7 @@ function ViewSong(props) {
 
   const dislikeSong = () => {
     axios
-      .get("http://localhost:8000/api/songs/user-dislike/id/" + songId.id, {
+      .get(HOST.backend_api + "songs/user-dislike/id/" + songId.id, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -160,7 +126,7 @@ function ViewSong(props) {
 
   const likeSong = () => {
     axios
-      .get("http://localhost:8000/api/songs/user-like/id/" + songId.id, {
+      .get(HOST.backend_api + "songs/user-like/id/" + songId.id, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -187,7 +153,7 @@ function ViewSong(props) {
   const saveSongInPlaylists = (e) => {
     axios
       .post(
-        "http://localhost:8000/api/users/playlists/save/" + songId.id,
+        HOST.backend_api + "users/playlists/save/" + songId.id,
         {
           playlists: selectedPlaylists,
         },
@@ -245,7 +211,7 @@ function ViewSong(props) {
   const saveNewPlaylist = () => {
     axios
       .post(
-        "http://localhost:8000/api/users/playlists/new",
+        HOST.backend_api + "users/playlists/new",
         { playlistName: nameValue.name },
         {
           headers: {

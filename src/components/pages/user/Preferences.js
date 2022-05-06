@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import UserNavbar from "../../commons/UserNavbar";
 import CircularProgress from "@mui/material/CircularProgress";
+import { HOST } from "../../commons/Hosts";
 import axios from "axios";
 
 function Preferences() {
@@ -10,7 +11,7 @@ function Preferences() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/users/user", {
+      .get(HOST.backend_api + "users/user", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -18,7 +19,7 @@ function Preferences() {
       .then((response) => {
         setUser(response.data);
         axios
-          .get("http://localhost:8000/api/users/user/favorites", {
+          .get(HOST.backend_api + "users/user/favorites", {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },

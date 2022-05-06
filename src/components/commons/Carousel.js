@@ -7,26 +7,26 @@ import image2 from "../../assets/images/2.jpg";
 import image4 from "../../assets/images/4.jpg";
 
 let count = 0;
-const featuredImages = [image1, image2, image4];
 function Carousel() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [position, setPosition] = useState(0);
+  const images = [image1, image2, image4];
 
   const handleOnNextClick = () => {
-    count = (count + 1) % featuredImages.length;
-    setCurrentIndex(count);
+    count = (count + 1) % images.length;
+    setPosition(count);
   };
 
   const handleOnPrevClick = () => {
-    const productsLength = featuredImages.length;
-    count = (currentIndex + productsLength - 1) % productsLength;
-    setCurrentIndex(count);
+    const len = images.length;
+    count = (position + len - 1) % len;
+    setPosition(count);
   };
 
   return (
     <div className="w-full relative select-none">
       <div
         style={{
-          background: `url(${featuredImages[currentIndex]})  no-repeat center center / cover`,
+          background: `url(${images[position]})  no-repeat center center / cover`,
           minHeight: "50vh",
         }}
       />

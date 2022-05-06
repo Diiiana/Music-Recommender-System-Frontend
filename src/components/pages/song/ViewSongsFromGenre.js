@@ -3,6 +3,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import UserNavbar from "../../commons/UserNavbar";
 import { useParams } from "react-router-dom";
 import { useHistory } from "react-router-dom";
+import { HOST } from "../../commons/Hosts";
 import axios from "axios";
 
 function ViewSongsFromGenre() {
@@ -13,7 +14,7 @@ function ViewSongsFromGenre() {
   useEffect(() => {
     const getSongsFromGenre = async () => {
       const { data } = await axios.get(
-        "http://localhost:8000/api/songs/genre/" + genreId.id,
+        HOST.backend_api + "songs/genre/" + genreId.id,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,

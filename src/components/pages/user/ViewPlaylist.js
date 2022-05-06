@@ -7,6 +7,7 @@ import { Card, CardHeader, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import Typography from "@mui/material/Typography";
+import { HOST } from "../../commons/Hosts";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,7 +24,7 @@ function ViewPlaylist() {
   useEffect(() => {
     const getSongsFromPlaylist = async () => {
       const { data } = await axios.get(
-        "http://localhost:8000/api/users/playlists/view/" + playlistId.id,
+        HOST.backend_api + "users/playlists/view/" + playlistId.id,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
@@ -38,7 +39,8 @@ function ViewPlaylist() {
   const removeSongFromPlaylist = (e) => {
     axios
       .delete(
-        "http://localhost:8000/api/users/playlists/delete-song/" +
+        HOST.backend_api +
+          "users/playlists/delete-song/" +
           playlistId.id +
           "/" +
           e.target.song_id,

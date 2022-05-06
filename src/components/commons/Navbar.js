@@ -52,25 +52,25 @@ function Navbar() {
         className={
           !showMobileMenu
             ? "hidden"
-            : "absolute bg-[#2c90ac] w-full p-8 text-black z-40"
+            : "absolute bg-[#2c90ac] w-full p-8 text-white z-40"
         }
       >
-        <li className="hover:bg-gray-200 cursor-pointer">
+        <li className="hover:bg-gray-200 hover:text-black cursor-pointer">
           <Link to="home_page" smooth={true} offset={50} duration={500}>
             Home
           </Link>
         </li>
-        <li className="hover:bg-gray-200 cursor-pointer">
+        <li className="hover:bg-gray-200 hover:text-black cursor-pointer">
           <Link to="about_page" smooth={true} offset={50} duration={500}>
             About
           </Link>
         </li>
-        <li className="hover:bg-gray-200 cursor-pointer">
+        <li className="hover:bg-gray-200 hover:text-black cursor-pointer">
           <Link to="services_page" smooth={true} offset={50} duration={500}>
             Services
           </Link>
         </li>
-        <li className="hover:bg-gray-200 cursor-pointer">
+        <li className="hover:bg-gray-200 hover:text-black cursor-pointer">
           <Link to="footer_section" smooth={true} offset={50} duration={500}>
             Contact
           </Link>

@@ -12,6 +12,7 @@ import {
   Legend,
 } from "recharts";
 import { useHistory } from "react-router-dom";
+import { HOST } from "../../commons/Hosts";
 
 function UserHistory() {
   const history = useHistory();
@@ -96,7 +97,7 @@ function UserHistory() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/users/history", {
+      .get(HOST.backend_api + "users/history", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
@@ -105,7 +106,7 @@ function UserHistory() {
         setListenedSongs(response.data);
         setData(response.data);
         axios
-          .get("http://localhost:8000/api/users/liked", {
+          .get(HOST.backend_api + "users/liked", {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
@@ -113,7 +114,7 @@ function UserHistory() {
           .then((response) => {
             setLikedSongs(response.data);
             axios
-              .get("http://localhost:8000/api/users/chart", {
+              .get(HOST.backend_api + "users/chart", {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem(
                     "access_token"

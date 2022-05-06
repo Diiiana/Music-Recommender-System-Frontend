@@ -5,11 +5,10 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Modal from "@mui/material/Modal";
-import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-
-const focusedColor = "black";
+import { useButtonStyles } from "../commons/Constants";
+import { HOST } from "../commons/Hosts";
 
 const style = {
   position: "absolute",
@@ -22,40 +21,9 @@ const style = {
   bgcolor: "white",
 };
 
-const useStyles = makeStyles((theme) => ({
-  form: {
-    width: "100%",
-    borderRadius: "1em 1em 1em 1em",
-    padding: "20px",
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
-    color: "white",
-    height: 48,
-    padding: "0 30px",
-  },
-  root: {
-    "& label.Mui-focused": {
-      color: focusedColor,
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: focusedColor,
-    },
-    "& .MuiFilledInput-underline:after": {
-      borderBottomColor: focusedColor,
-    },
-    "& .MuiOutlinedInput-root": {
-      "&.Mui-focused fieldset": {
-        borderColor: focusedColor,
-      },
-    },
-  },
-}));
 function UserNavbar(props) {
   const history = useHistory();
-  const classes = useStyles();
+  const classes = useButtonStyles();
   const [showSideBar, setShowSideBar] = useState(false);
   const [user, setUser] = useState();
   const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
@@ -66,14 +34,11 @@ function UserNavbar(props) {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data } = await axios.get(
-        "http://localhost:8000/api/users/profile",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
+      const { data } = await axios.get(HOST.backend_api + "users/profile", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      });
       setUser(data);
     };
     getUser();

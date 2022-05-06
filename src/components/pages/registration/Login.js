@@ -10,40 +10,13 @@ import {
   TextField,
 } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
-import { makeStyles } from "@material-ui/core/styles";
 import axios from "axios";
-
-const focusedColor = "black";
-const useStyles = makeStyles((theme) => ({
-  form: {
-    borderRadius: "1em 1em 1em 1em",
-    padding: "20px",
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-    border: 0,
-    borderRadius: 3,
-    boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
-    color: "white",
-    height: 48,
-    padding: "0 30px",
-  },
-  root: {
-    "& label.Mui-focused": {
-      color: focusedColor,
-    },
-    "& .MuiOutlinedInput-root": {
-      "&.Mui-focused fieldset": {
-        borderColor: focusedColor,
-      },
-    },
-  },
-}));
+import { useButtonStyles } from "../../commons/Constants";
+import { HOST } from "../../commons/Hosts";
 
 function Login() {
-  const classes = useStyles();
   const history = useHistory();
+  const classes = useButtonStyles();
   const [emailValue, setEmailValue] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
@@ -77,7 +50,7 @@ function Login() {
         setEmailError("");
         setPasswordError("");
         axios
-          .post(`http://localhost:8000/api/users/login`, {
+          .post(HOST.backend_api + `users/login`, {
             email: emailValue.email,
             password: values.password,
           })
@@ -86,16 +59,13 @@ function Login() {
             localStorage.setItem("refresh_token", res.data.refresh);
 
             axios
-              .get(
-                `http://localhost:8000/api/users/preferences`,
-                {
-                  headers: {
-                    Authorization: `Bearer ${localStorage.getItem(
-                      "access_token"
-                    )}`,
-                  },
-                }
-              )
+              .get(HOST.backend_api + `users/preferences`, {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem(
+                    "access_token"
+                  )}`,
+                },
+              })
               .then((r) => {
                 if (r.status === 200) {
                   history.push({
@@ -142,6 +112,7 @@ function Login() {
               label="Email Address"
               name="email"
               autoFocus
+              required
               onChange={(e) => checkEmailAddress(e)}
               className={classes.root}
             />
@@ -150,6 +121,7 @@ function Login() {
 
           <div>
             <TextField
+              required
               variant="outlined"
               margin="normal"
               fullWidth

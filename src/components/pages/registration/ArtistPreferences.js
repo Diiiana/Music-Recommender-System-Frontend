@@ -5,38 +5,14 @@ import axios from "axios";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import TextField from "@material-ui/core/TextField";
 import { useLocation } from "react-router-dom";
-import { makeStyles } from "@mui/styles";
 import Modal from "@mui/material/Modal";
-
-const useStyles = makeStyles({
-  root: {
-    "& label": {
-      color: "black",
-    },
-    "& label.Mui-focused": {
-      color: "black",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "black",
-    },
-    "& .MuiFilledInput-underline:after": {
-      borderBottomColor: "black",
-    },
-    "& .MuiOutlinedInput-root": {
-      "&.Mui-focused fieldset": {
-        borderColor: "black",
-      },
-      "& fieldset": {
-        borderColor: "black",
-      },
-    },
-  },
-});
+import { useButtonStyles } from "../../commons/Constants";
+import { HOST } from "../../commons/Hosts";
 
 function Artists() {
   const location = useLocation();
   const history = useHistory();
-  const classes = useStyles();
+  const classes = useButtonStyles();
   const [open, setOpen] = useState(false);
   const [allArtists, setAllArtists] = useState([]);
   const [selectedArtists, setSelectedArtists] = useState([]);
@@ -56,7 +32,7 @@ function Artists() {
       handleOpen();
     } else {
       axios
-        .post("http://localhost:8000/api/artists/music", {
+        .post(HOST.backend_api + "artists/music", {
           artists: l,
           userId: location.state.user,
         })
@@ -108,11 +84,11 @@ function Artists() {
       );
     });
   };
-  
+
   useEffect(() => {
     const getArtists = async () => {
       const { data } = await axios
-        .get("http://localhost:8000/api/artists")
+        .get(HOST.backend_api + "artists")
         .catch(function (error) {
           console.log(error);
         });
