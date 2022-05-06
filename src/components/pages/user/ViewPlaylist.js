@@ -7,6 +7,7 @@ import { Card, CardHeader, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import Typography from "@mui/material/Typography";
+import ErrorMessage from "../../commons/ErrorMessage";
 import { HOST } from "../../commons/Hosts";
 
 const useStyles = makeStyles((theme) => ({
@@ -20,17 +21,21 @@ function ViewPlaylist() {
   const playlistId = useParams();
   const classes = useStyles();
   const [playlist, setPlaylist] = useState();
+  const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
 
   useEffect(() => {
     const getSongsFromPlaylist = async () => {
-      const { data } = await axios.get(
-        HOST.backend_api + "users/playlists/view/" + playlistId.id,
-        {
+      const { data } = await axios
+        .get(HOST.backend_api + "users/playlists/view/" + playlistId.id, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
-      );
+        })
+        .catch(function (error) {
+          if (error.response.status === 401) {
+            setOpenUnauthorizedModal(true);
+          }
+        });
       setPlaylist(data);
     };
     getSongsFromPlaylist();
@@ -52,6 +57,11 @@ function ViewPlaylist() {
       )
       .then((response) => {
         setPlaylist(response.data);
+      })
+      .catch(function (error) {
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
       });
   };
 
@@ -111,6 +121,10 @@ function ViewPlaylist() {
 
   return (
     <div className="w-full h-screen bg-[#2c90ac] overflow-y-scroll">
+      <ErrorMessage
+        isOpen={openUnauthorizedModal}
+        message="Your session has expired. Please login again."
+      />
       <UserNavbar title="Playlists" />
       <div className="xs:pl-2 sm:pl-8 lg:pl-2/3 pt-16 w-full h-screen">
         {displayPlaylist()}

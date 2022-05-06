@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import UserNavbar from "../../commons/UserNavbar";
 import CircularProgress from "@mui/material/CircularProgress";
+import ErrorMessage from "../../commons/ErrorMessage";
 import { HOST } from "../../commons/Hosts";
 import axios from "axios";
 
@@ -8,6 +9,7 @@ function Preferences() {
   const [user, setUser] = useState(null);
   const [tags, setTags] = useState(null);
   const [artists, setArtists] = useState(null);
+  const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
 
   useEffect(() => {
     axios
@@ -27,7 +29,17 @@ function Preferences() {
           .then((response) => {
             setTags(response.data.tags);
             setArtists(response.data.artists);
+          })
+          .catch(function (error) {
+            if (error.response.status === 401) {
+              setOpenUnauthorizedModal(true);
+            }
           });
+      })
+      .catch(function (error) {
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
       });
   }, []);
 
@@ -61,6 +73,10 @@ function Preferences() {
 
   return (
     <div className="w-full h-screen bg-cover bg-[#2c90ac] overflow-y-scroll">
+      <ErrorMessage
+        isOpen={openUnauthorizedModal}
+        message="Your session has expired. Please login again."
+      />
       <UserNavbar title="Preferences" />
       {user === null || artists === null || tags === null ? (
         <div className="w-full h-screen flex items-center justify-center">

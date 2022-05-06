@@ -8,6 +8,7 @@ import { MdTimeline } from "react-icons/md";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 import { HOST } from "../../commons/Hosts";
+import ErrorMessage from "../../commons/ErrorMessage";
 
 function DiscoverableSongs() {
   const history = useHistory();
@@ -18,34 +19,50 @@ function DiscoverableSongs() {
   const [data, setData] = useState([]);
   const [active, setActive] = useState("");
   const [number, setNumber] = useState(7);
+  const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
 
   useEffect(() => {
     const getSongsByDate = async () => {
-      const { data } = await axios.get(HOST.backend_api + "songs/by-date", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      });
+      const { data } = await axios
+        .get(HOST.backend_api + "songs/by-date", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
+        .catch(function (error) {
+          if (error.response.status === 401) {
+            setOpenUnauthorizedModal(true);
+          }
+        });
       setSongs(data);
       setActive("genres");
     };
     const getTagsByPopularity = async () => {
-      const { data } = await axios.get(HOST.backend_api + "tags/popularity", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      });
-      setGenres(data);
-    };
-    const getArtistsByPopularity = async () => {
-      const { data } = await axios.get(
-        HOST.backend_api + "artists/latest-popular",
-        {
+      const { data } = await axios
+        .get(HOST.backend_api + "tags/popularity", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
-      );
+        })
+        .catch(function (error) {
+          if (error.response.status === 401) {
+            setOpenUnauthorizedModal(true);
+          }
+        });
+      setGenres(data);
+    };
+    const getArtistsByPopularity = async () => {
+      const { data } = await axios
+        .get(HOST.backend_api + "artists/latest-popular", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
+        .catch(function (error) {
+          if (error.response.status === 401) {
+            setOpenUnauthorizedModal(true);
+          }
+        });
       setArtists(data);
     };
     getSongsByDate();
@@ -161,6 +178,10 @@ function DiscoverableSongs() {
 
   return (
     <div className="grid xs:grid-cols-2 lg:grid-cols-9 md:grid-cols-5 h-full text">
+      <ErrorMessage
+        isOpen={openUnauthorizedModal}
+        message="Your session has expired. Please login again."
+      />
       <div className="bg-red max-w-32 lg:w-44 md:w-44 sm:w-24 h-full col-span-1 bg-transparent">
         <div className="grid grid-rows-3 w-full h-full">
           {data.length === 0 && displayGenres(genres)}

@@ -6,31 +6,38 @@ import LinearProgress from "@mui/material/LinearProgress";
 import axios from "axios";
 import { useButtonStyles } from "../commons/Constants";
 import { HOST } from "../commons/Hosts";
+import ErrorMessage from "./ErrorMessage";
 
 function CommentBox(songId) {
   const classes = useButtonStyles();
   const [user, setUser] = useState(null);
   const [value, setValue] = useState("");
   const [comments, setComments] = useState(null);
+  const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
 
   useEffect(() => {
     const getCommentsForSong = async () => {
-      const { data } = await axios.get(
-        HOST.backend_api + "songs/comments/" + songId.songId,
-        {
+      const { data } = await axios
+        .get(HOST.backend_api + "songs/comments/" + songId.songId, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
-      );
+        })
+        .catch((error) => {});
       setComments(data);
     };
     const getLoggedUser = async () => {
-      const { data } = await axios.get(HOST.backend_api + "users/user", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      });
+      const { data } = await axios
+        .get(HOST.backend_api + "users/user", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
+        .catch(function (error) {
+          if (error.response.status === 401) {
+            setOpenUnauthorizedModal(true);
+          }
+        });
       setUser(data);
     };
 
@@ -98,6 +105,10 @@ function CommentBox(songId) {
 
   return (
     <div className="w-full h-full">
+      <ErrorMessage
+        isOpen={openUnauthorizedModal}
+        message="Your session has expired. Please login again."
+      />
       <div className="w-full h-4/5 p-2 overflow-y-scroll">
         {comments === null || user === null ? (
           <LinearProgress color="inherit" />

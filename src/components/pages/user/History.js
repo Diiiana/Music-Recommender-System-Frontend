@@ -13,6 +13,7 @@ import {
 } from "recharts";
 import { useHistory } from "react-router-dom";
 import { HOST } from "../../commons/Hosts";
+import ErrorMessage from "../../commons/ErrorMessage";
 
 function UserHistory() {
   const history = useHistory();
@@ -20,6 +21,7 @@ function UserHistory() {
   const [chartData, setChartData] = useState([]);
   const [likedSongs, setLikedSongs] = useState([]);
   const [listenedSongs, setListenedSongs] = useState([]);
+  const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
 
   const displayData = () => {
     return data.map((s) => {
@@ -129,16 +131,24 @@ function UserHistory() {
               });
           })
           .catch(function (error) {
-            console.log(error);
+            if (error.response.status === 401) {
+              setOpenUnauthorizedModal(true);
+            }
           });
       })
       .catch(function (error) {
-        console.log(error);
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
       });
   }, []);
 
   return (
     <div className="h-screen w-full bg-[#0e7490] overflow-y-scroll">
+      <ErrorMessage
+        isOpen={openUnauthorizedModal}
+        message="Your session has expired. Please login again."
+      />
       <UserNavbar title="History" />
       <div className="flex justify-center mx-4 pt-12 ml-24">
         <div id="listened-song">

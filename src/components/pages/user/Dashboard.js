@@ -3,12 +3,14 @@ import { useLocation, useHistory } from "react-router-dom";
 import UserNavbar from "../../commons/UserNavbar";
 import { Button } from "@mui/material";
 import { HOST } from "../../commons/Hosts";
+import ErrorMessage from "../../commons/ErrorMessage";
 import axios from "axios";
 
 function Dashboard() {
   const history = useHistory();
   const location = useLocation();
   const [songData, setSongData] = useState([]);
+  const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
 
   const pushSelectedSong = (id) => {
     history.push({
@@ -56,14 +58,20 @@ function Dashboard() {
         .then((response) => {
           setSongData(response.data);
         })
-        .catch((error) => {
-          console.log(error.response.status);
+        .catch(function (error) {
+          if (error.response.status === 401) {
+            setOpenUnauthorizedModal(true);
+          }
         });
     }
   }, [location.state]);
 
   return (
     <div className="bg-[#2c90ac] h-screen w-full overflow-y-scroll">
+      <ErrorMessage
+        isOpen={openUnauthorizedModal}
+        message="Your session has expired. Please login again."
+      />
       <UserNavbar title="Dashboard" />
       <div style={{ justifyContent: "center" }}>
         <h3 className="text-2xl sm:text-2xl md:text-2xl font-bold text-gray-200 mb-5">

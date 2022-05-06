@@ -5,22 +5,27 @@ import { useParams } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import { HOST } from "../../commons/Hosts";
 import axios from "axios";
+import ErrorMessage from "../../commons/ErrorMessage";
 
 function ViewSongsFromGenre() {
   const genreId = useParams();
   const history = useHistory();
   const [songs, setSongs] = useState(null);
+  const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
 
   useEffect(() => {
     const getSongsFromGenre = async () => {
-      const { data } = await axios.get(
-        HOST.backend_api + "songs/genre/" + genreId.id,
-        {
+      const { data } = await axios
+        .get(HOST.backend_api + "songs/genre/" + genreId.id, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        }
-      );
+        })
+        .catch(function (error) {
+          if (error.response.status === 401) {
+            setOpenUnauthorizedModal(true);
+          }
+        });
       setSongs(data);
     };
     getSongsFromGenre();
@@ -60,6 +65,10 @@ function ViewSongsFromGenre() {
 
   return (
     <div className="h-screen w-full bg-[#2c90ac] overflow-y-scroll">
+      <ErrorMessage
+        isOpen={openUnauthorizedModal}
+        message="Your session has expired. Please login again."
+      />
       <UserNavbar title="Songs" />
       {songs === null ? (
         <div className="w-full h-screen flex items-center justify-center">

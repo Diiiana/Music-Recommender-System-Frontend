@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import UserNavbar from "../../commons/UserNavbar";
 import { HOST } from "../../commons/Hosts";
+import ErrorMessage from "../../commons/ErrorMessage";
 import axios from "axios";
 
 function Playlists() {
   const history = useHistory();
   const [playlists, setPlaylists] = useState([]);
+  const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
 
   useEffect(() => {
     axios
@@ -17,6 +19,11 @@ function Playlists() {
       })
       .then((response) => {
         setPlaylists(response.data);
+      })
+      .catch(function (error) {
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
       });
   }, []);
 
@@ -46,6 +53,10 @@ function Playlists() {
 
   return (
     <div className="w-full h-screen bg-[#2c90ac]">
+      <ErrorMessage
+        isOpen={openUnauthorizedModal}
+        message="Your session has expired. Please login again."
+      />
       <UserNavbar title="Playlists" />
       <div
         className="pt-16 w-full h-screen grid xs:grid-cols-3 sm:grid-cols-4

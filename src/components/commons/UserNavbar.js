@@ -3,27 +3,11 @@ import { MenuIcon } from "@heroicons/react/outline";
 import Avatar from "@mui/material/Avatar";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import { useButtonStyles } from "../commons/Constants";
 import { HOST } from "../commons/Hosts";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  boxShadow: 24,
-  p: 4,
-  width: 300,
-  bgcolor: "white",
-};
+import ErrorMessage from "./ErrorMessage";
 
 function UserNavbar(props) {
   const history = useHistory();
-  const classes = useButtonStyles();
   const [showSideBar, setShowSideBar] = useState(false);
   const [user, setUser] = useState();
   const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
@@ -34,11 +18,17 @@ function UserNavbar(props) {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data } = await axios.get(HOST.backend_api + "users/profile", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      });
+      const { data } = await axios
+        .get(HOST.backend_api + "users/profile", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        })
+        .catch(function (error) {
+          if (error.response.status === 401) {
+            setOpenUnauthorizedModal(true);
+          }
+        });
       setUser(data);
     };
     getUser();
@@ -58,33 +48,12 @@ function UserNavbar(props) {
     }
   };
 
-  const showProfile = () => {};
   return (
     <div className="w-full h-10 bg-[#2c90ac] fixed z-40">
-      <div>
-        <Modal open={openUnauthorizedModal}>
-          <Box sx={style}>
-            <Typography>
-              Your session has expired. Please login again.
-            </Typography>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              onClick={() => {
-                setOpenUnauthorizedModal(false);
-                history.push({
-                  pathname: "/user/login/",
-                });
-              }}
-            >
-              OK
-            </Button>
-          </Box>
-        </Modal>
-      </div>
+      <ErrorMessage
+        isOpen={openUnauthorizedModal}
+        message="Your session has expired. Please login again."
+      />
       <div className="w-full h-full px-2 flex justify-right items-center">
         <ul className="md:flex text-white cursor-pointer flex justify-right items-center">
           <li onClick={handleClick}>
@@ -108,10 +77,7 @@ function UserNavbar(props) {
           }
         >
           <article className="text-white relative w-screen max-w-[16rem] pb-10 flex flex-col space-y-6 h-full divide-y">
-            <div
-              className="flex mt-5 ml-5 items-center hover:cursor-pointer"
-              onClick={(e) => showProfile()}
-            >
+            <div className="flex mt-5 ml-5 items-center hover:cursor-pointer">
               <Avatar {...stringAvatar()} />
               <header className="p-2 font-bold text-lg">
                 {user ? user.user_name : "My profile"}

@@ -20,6 +20,7 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import { TextField } from "@mui/material";
 import { useButtonStyles } from "../../commons/Constants";
 import { HOST } from "../../commons/Hosts";
+import ErrorMessage from "../../commons/ErrorMessage";
 
 const style = {
   position: "absolute",
@@ -46,10 +47,10 @@ function ViewSong(props) {
 
   const [open, setOpen] = useState(false);
   const [recommended, setRecommended] = useState(null);
-  const [openPlaylistModal, setOpenPlaylistModal] = useState(false);
   const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
+  const [openPlaylistModal, setOpenPlaylistModal] = useState(false);
   const [openCreatePlaylistModal, setOpenCreatePlaylistModal] = useState(false);
-
+ 
   useEffect(() => {
     axios
       .get(HOST.backend_api + "songs/id/" + songId.id, {
@@ -87,15 +88,15 @@ function ViewSong(props) {
             setPlaylists(response.data);
           })
           .catch(function (error) {
-            console.log(error);
+            if (error.response.status === 401) {
+              setOpenUnauthorizedModal(true);
+            }
           });
       })
       .catch(function (error) {
-        console.log(error);
         if (error.response.status === 401) {
           setOpenUnauthorizedModal(true);
         }
-        console.log(error);
       });
     axios
       .get(HOST.backend_api + "recommendations/similar/" + songId.id, {
@@ -106,6 +107,11 @@ function ViewSong(props) {
       .then((response) => {
         const recommendedSongs = response.data;
         setRecommended(recommendedSongs);
+      })
+      .catch(function (error) {
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
       });
   }, [songId.id]);
 
@@ -120,7 +126,9 @@ function ViewSong(props) {
         setIsLiked(0);
       })
       .catch(function (error) {
-        console.log(error);
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
       });
   };
 
@@ -135,7 +143,9 @@ function ViewSong(props) {
         setIsLiked(1);
       })
       .catch(function (error) {
-        console.log(error);
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
       });
   };
 
@@ -167,7 +177,9 @@ function ViewSong(props) {
         setOpenPlaylistModal(false);
       })
       .catch(function (error) {
-        console.log(error);
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
       });
   };
 
@@ -224,12 +236,18 @@ function ViewSong(props) {
         setOpenCreatePlaylistModal(false);
       })
       .catch(function (error) {
-        console.log(error);
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
       });
   };
 
   return (
     <div className=" overflow-y-hidden">
+      <ErrorMessage
+        isOpen={openUnauthorizedModal}
+        message="Your session has expired. Please login again."
+      />
       <div>
         <Modal
           open={openPlaylistModal}
@@ -313,30 +331,6 @@ function ViewSong(props) {
         </Modal>
       </div>
 
-      <div>
-        <Modal open={openUnauthorizedModal}>
-          <Box sx={style}>
-            <Typography>
-              Your session has expired. Please login again.
-            </Typography>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              onClick={() => {
-                setOpenUnauthorizedModal(false);
-                history.push({
-                  pathname: "/user/login/",
-                });
-              }}
-            >
-              OK
-            </Button>
-          </Box>
-        </Modal>
-      </div>
       <UserNavbar title="Listening now" />
       <div className="grid-container grid grid-cols-5">
         <div className="bg-[#2c90ac] to-black h-screen w-full col-span-3 mr-24  overflow-y-hidden">
