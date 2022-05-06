@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Button from "@material-ui/core/Button";
 import Typography from "@mui/material/Typography";
 import { useHistory } from "react-router-dom";
@@ -20,13 +20,10 @@ const style = {
 function ErrorMessage(props) {
   const history = useHistory();
   const classes = useButtonStyles();
-  const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(
-    props.isOpen
-  );
 
   return (
     <div>
-      <Modal open={openUnauthorizedModal}>
+      <Modal open={props.isOpen}>
         <Box sx={style}>
           <Typography>{props.message}</Typography>
           <Button
@@ -36,7 +33,6 @@ function ErrorMessage(props) {
             color="primary"
             className={classes.submit}
             onClick={() => {
-              setOpenUnauthorizedModal(false);
               history.push({
                 pathname: "/user/login/",
               });

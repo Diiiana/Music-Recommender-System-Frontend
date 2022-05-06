@@ -138,6 +138,7 @@ function UserHistory() {
       })
       .catch(function (error) {
         if (error.response.status === 401) {
+          console.log(" AAAAAAAAAAAA")
           setOpenUnauthorizedModal(true);
         }
       });
