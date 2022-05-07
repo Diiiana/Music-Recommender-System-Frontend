@@ -177,91 +177,94 @@ function DiscoverableSongs() {
   };
 
   return (
-    <div className="grid xs:grid-cols-2 lg:grid-cols-9 md:grid-cols-5 h-full text">
+    <div>
       <ErrorMessage
         isOpen={openUnauthorizedModal}
         message="Your session has expired. Please login again."
       />
-      <div className="bg-red max-w-32 lg:w-44 md:w-44 sm:w-24 h-full col-span-1 bg-transparent">
-        <div className="grid grid-rows-3 w-full h-full">
-          {data.length === 0 && displayGenres(genres)}
-          <div className="w-full h-full flex items-center">
-            <button
-              className="w-full h-1/2 flex items-center mx-2 bg-[#2c90ac]
-            hover:bg-gray-600"
-            >
-              <div className="ml-2 text-white">
-                <RiAlbumFill size={20} />
-              </div>
-              <p
-                onClick={(e) => {
-                  setNumber(7);
-                  displayGenres(genres);
-                  setActive("genres");
-                }}
-                className="flex text-center justify-center w-full text-white"
-              >
-                Genres
-              </p>
-            </button>
-          </div>
 
-          <div className="w-full h-full flex items-center text-center">
-            <button
-              className="w-full h-1/2 flex items-center mx-2 bg-[#0e7490]
+      <div className="grid xs:grid-cols-2 lg:grid-cols-9 md:grid-cols-5 h-full text">
+        <div className="bg-red max-w-32 lg:w-44 md:w-44 sm:w-24 h-full col-span-1 bg-transparent">
+          <div className="grid grid-rows-3 w-full h-full">
+            {data.length === 0 && displayGenres(genres)}
+            <div className="w-full h-full flex items-center">
+              <button
+                className="w-full h-1/2 flex items-center mx-2 bg-[#2c90ac]
             hover:bg-gray-600"
-            >
-              <div className="ml-2 text-white">
-                <RiCompassDiscoverLine size={20} />
-              </div>
-              <p
-                onClick={(e) => {
-                  setNumber(7);
-                  displayArtists(artists);
-                  setActive("artists");
-                }}
-                className="flex text-center justify-center w-full text-white"
               >
-                Artists
-              </p>
-            </button>
-          </div>
+                <div className="ml-2 text-white">
+                  <RiAlbumFill size={20} />
+                </div>
+                <p
+                  onClick={(e) => {
+                    setNumber(7);
+                    displayGenres(genres);
+                    setActive("genres");
+                  }}
+                  className="flex text-center justify-center w-full text-white"
+                >
+                  Genres
+                </p>
+              </button>
+            </div>
 
-          <div className="w-full h-full flex items-center">
-            <button
-              className="w-full h-1/2 flex items-center mx-2 bg-[#0e7490]
+            <div className="w-full h-full flex items-center text-center">
+              <button
+                className="w-full h-1/2 flex items-center mx-2 bg-[#0e7490]
             hover:bg-gray-600"
-            >
-              <div className="ml-2 text-white">
-                <FiActivity size={20} />
-              </div>
-              <p
-                onClick={(e) => {
-                  setNumber(7);
-                  displaySongs(songs);
-                  setActive("songs");
-                }}
-                className="flex text-center justify-center w-full text-white"
               >
-                Latest Songs
-              </p>
-            </button>
+                <div className="ml-2 text-white">
+                  <RiCompassDiscoverLine size={20} />
+                </div>
+                <p
+                  onClick={(e) => {
+                    setNumber(7);
+                    displayArtists(artists);
+                    setActive("artists");
+                  }}
+                  className="flex text-center justify-center w-full text-white"
+                >
+                  Artists
+                </p>
+              </button>
+            </div>
+
+            <div className="w-full h-full flex items-center">
+              <button
+                className="w-full h-1/2 flex items-center mx-2 bg-[#0e7490]
+            hover:bg-gray-600"
+              >
+                <div className="ml-2 text-white">
+                  <FiActivity size={20} />
+                </div>
+                <p
+                  onClick={(e) => {
+                    setNumber(7);
+                    displaySongs(songs);
+                    setActive("songs");
+                  }}
+                  className="flex text-center justify-center w-full text-white"
+                >
+                  Latest Songs
+                </p>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        className="flex item-center ml-8 overflow-x-scroll 
+        <div
+          className="flex item-center ml-8 overflow-x-scroll 
       lg:col-span-8 md:col-span-4 xs:grid-cols-1"
-      >
-        <div className="flex item-center">
-          <table>
-            <tbody>{data !== null && <tr>{data}</tr>}</tbody>
-          </table>
-          <div
-            onClick={loadMore}
-            className="float-right mx-4 flex items-center hover:cursor-pointer"
-          >
-            <BsArrowRightCircle size={25} />
+        >
+          <div className="flex item-center">
+            <table>
+              <tbody>{data !== null && <tr>{data}</tr>}</tbody>
+            </table>
+            <div
+              onClick={loadMore}
+              className="float-right mx-4 flex items-center hover:cursor-pointer"
+            >
+              <BsArrowRightCircle size={25} />
+            </div>
           </div>
         </div>
       </div>

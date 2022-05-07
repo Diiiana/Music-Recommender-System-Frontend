@@ -45,6 +45,7 @@ function Dashboard() {
   }
 
   useEffect(() => {
+    console.log("dashboard")
     if (location.state && location.state.songs) {
       const val = location.state.songs;
       setSongData(val);
@@ -56,9 +57,11 @@ function Dashboard() {
           },
         })
         .then((response) => {
+          console.log(response.data)
           setSongData(response.data);
         })
         .catch(function (error) {
+          console.log(error)
           if (error.response.status === 401) {
             setOpenUnauthorizedModal(true);
           }
