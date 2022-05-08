@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import App from "./components/pages/welcome/App";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Login from "./components/pages/registration/Login";
@@ -15,37 +15,12 @@ import ViewPlaylist from "./components/pages/user/ViewPlaylist";
 import UserHistory from "./components/pages/user/History";
 import Preferences from "./components/pages/user/Preferences";
 import ViewSong from "./components/pages/song/ViewSong";
+import SimilarSongs from "./components/pages/song/SimilarSongs";
 import ViewSongsFromArtist from "./components/pages/song/ViewSongsFromArtist";
 import ViewSongsFromGenre from "./components/pages/song/ViewSongsFromGenre";
 import Discover from "./components/pages/user/Discover";
-import { HOST } from "./components/commons/Hosts";
-import axios from "axios";
 
 function Root() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const getLoggedUser = async () => {
-      await axios
-        .get(HOST.backend_api + "users/user", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        })
-        .then((response) => {
-          if (response.status === 200) {
-            setIsAuthenticated(true);
-          }
-        })
-        .catch(function (error) {
-          if (error.response.status === 401) {
-            setIsAuthenticated(false);
-          }
-        });
-    };
-    getLoggedUser();
-  }, []);
-
   return (
     <Router>
       <Switch>
@@ -78,69 +53,24 @@ function Root() {
           path="/register/songs"
           render={() => <SongPreferences />}
         />
-        <Route
-          exact
-          path="/dashboard"
-          render={() => {
-            return isAuthenticated ? <Dashboard /> : <Login />;
-          }}
-        />
-        <Route
-          exact
-          path="/history"
-          render={() => {
-            return isAuthenticated ? <UserHistory /> : <Login />;
-          }}
-        />
-        <Route
-          exact
-          path="/playlists/:id"
-          render={() => {
-            return isAuthenticated ? <ViewPlaylist /> : <Login />;
-          }}
-        />
-        <Route
-          exact
-          path="/playlists"
-          render={() => {
-            return isAuthenticated ? <Playlists /> : <Login />;
-          }}
-        />
-        <Route
-          exact
-          path="/preferences"
-          render={() => {
-            return isAuthenticated ? <Preferences /> : <Login />;
-          }}
-        />
-        <Route
-          exact
-          path="/song/view/:id"
-          render={() => {
-            return isAuthenticated ? <ViewSong /> : <Login />;
-          }}
-        />
+        <Route exact path="/dashboard" render={() => <Dashboard />} />
+        <Route exact path="/history" render={() => <UserHistory />} />
+        <Route exact path="/playlists/:id" render={() => <ViewPlaylist />} />
+        <Route exact path="/playlists" render={() => <Playlists />} />
+        <Route exact path="/preferences" render={() => <Preferences />} />
+        <Route exact path="/song/view/:id" render={() => <ViewSong />} />
+        <Route exact path="/song/similar/:id" render={() => <SimilarSongs />} />
         <Route
           exact
           path="/song/genre/view/:id"
-          render={() => {
-            return isAuthenticated ? <ViewSongsFromGenre /> : <Login />;
-          }}
+          render={() => <ViewSongsFromGenre />}
         />
         <Route
           exact
           path="/song/artist/view/:id"
-          render={() => {
-            return isAuthenticated ? <ViewSongsFromArtist /> : <Login />;
-          }}
+          render={() => <ViewSongsFromArtist />}
         />
-        <Route
-          extact
-          path="/discover"
-          render={() => {
-            return isAuthenticated ? <Discover /> : <Login />;
-          }}
-        />
+        <Route extact path="/discover" render={() => <Discover />} />
       </Switch>
     </Router>
   );

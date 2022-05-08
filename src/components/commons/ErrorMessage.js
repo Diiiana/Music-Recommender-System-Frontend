@@ -22,7 +22,7 @@ function ErrorMessage(props) {
   const classes = useButtonStyles();
 
   return (
-    <div>
+    <div className="absolute mb-0">
       <Modal open={props.isOpen}>
         <Box sx={style}>
           <Typography>{props.message}</Typography>

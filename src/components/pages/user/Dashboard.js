@@ -45,7 +45,6 @@ function Dashboard() {
   }
 
   useEffect(() => {
-    console.log("dashboard")
     if (location.state && location.state.songs) {
       const val = location.state.songs;
       setSongData(val);

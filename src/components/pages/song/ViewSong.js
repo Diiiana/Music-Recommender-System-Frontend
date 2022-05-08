@@ -21,6 +21,8 @@ import { TextField } from "@mui/material";
 import { useButtonStyles } from "../../commons/Constants";
 import { HOST } from "../../commons/Hosts";
 import ErrorMessage from "../../commons/ErrorMessage";
+import ReadMoreIcon from "@mui/icons-material/ReadMore";
+import Tooltip from "@mui/material/Tooltip";
 
 const style = {
   position: "absolute",
@@ -50,7 +52,7 @@ function ViewSong(props) {
   const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
   const [openPlaylistModal, setOpenPlaylistModal] = useState(false);
   const [openCreatePlaylistModal, setOpenCreatePlaylistModal] = useState(false);
- 
+
   useEffect(() => {
     axios
       .get(HOST.backend_api + "songs/id/" + songId.id, {
@@ -418,6 +420,18 @@ function ViewSong(props) {
               >
                 <PlaylistAddIcon />
               </IconButton>
+              <Tooltip title="Similar Songs">
+                <IconButton
+                  className="float-right mr-5"
+                  onClick={(e) => {
+                    history.push({
+                      pathname: "/song/similar/" + songId.id,
+                    });
+                  }}
+                >
+                  <ReadMoreIcon />
+                </IconButton>
+              </Tooltip>
               <IconButton
                 className="float-right mr-5"
                 onClick={() => {

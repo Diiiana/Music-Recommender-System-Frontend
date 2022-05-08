@@ -131,14 +131,13 @@ function UserHistory() {
               });
           })
           .catch(function (error) {
-            if (error.response.status === 401) {
+            if (error.response && error.response.status === 401) {
               setOpenUnauthorizedModal(true);
             }
           });
       })
       .catch(function (error) {
-        if (error.response.status === 401) {
-          console.log(" AAAAAAAAAAAA")
+        if (error.response && error.response.status === 401) {
           setOpenUnauthorizedModal(true);
         }
       });

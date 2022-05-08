@@ -23,7 +23,11 @@ function CommentBox(songId) {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
         })
-        .catch((error) => {});
+        .catch(function (error) {
+          if (error.response.status === 401) {
+            setOpenUnauthorizedModal(true);
+          }
+        });
       setComments(data);
     };
     const getLoggedUser = async () => {
