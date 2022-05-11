@@ -22,7 +22,6 @@ function SimilarSongs(props) {
         .then((response) => {
           const recommendedSongs = response.data;
           setSongs(recommendedSongs);
-          console.log(recommendedSongs);
         });
     };
     getSongs();

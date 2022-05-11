@@ -16,19 +16,20 @@ function Dashboard() {
     history.push({
       pathname: "/song/view/" + id,
     });
-  };
+  }; 
 
   function mapSongs() {
     return songData.map((re) => {
       return (
-        <div key={re.id}>
-          <div
-            className="group object-contain mx-1 hover:cursor-pointer"
-            onClick={() => pushSelectedSong(re.id)}
-          >
+        <div
+          key={re.id}
+          className="hover:cursor-pointer"
+          onClick={() => pushSelectedSong(re.id)}
+        >
+          <div className="group object-contain mx-1">
             <img
               alt=""
-              className="block h-32 w-full rounded object-center object-contain"
+              className="block h-32 w-full rounded object-center object-contain blur-sm hover:blur-0"
               src={`data:image/jpeg;base64,${re.image}`}
             />
           </div>
@@ -37,7 +38,7 @@ function Dashboard() {
             <h3 className="text-white py-1 text-base justify-center">
               {re.song_name}
             </h3>
-            <p className="text-gray-400 text-sm">By {re.artist.name}</p>
+            <p className="text-gray-300 text-sm">By {re.artist.name}</p>
           </div>
         </div>
       );
@@ -56,11 +57,11 @@ function Dashboard() {
           },
         })
         .then((response) => {
-          console.log(response.data)
+          console.log(response.data);
           setSongData(response.data);
         })
         .catch(function (error) {
-          console.log(error)
+          console.log(error);
           if (error.response.status === 401) {
             setOpenUnauthorizedModal(true);
           }

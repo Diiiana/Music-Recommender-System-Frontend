@@ -34,7 +34,7 @@ function ErrorMessage(props) {
             className={classes.submit}
             onClick={() => {
               history.push({
-                pathname: "/user/login/",
+                pathname: "/user/login",
               });
             }}
           >

@@ -5,11 +5,14 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 import { HOST } from "../commons/Hosts";
 import ErrorMessage from "./ErrorMessage";
+import SearchIcon from "@mui/icons-material/Search";
+import IconButton from "@mui/material/IconButton";
 
 function UserNavbar(props) {
   const history = useHistory();
   const [showSideBar, setShowSideBar] = useState(false);
   const [user, setUser] = useState();
+  const [searchedValue, setSearchedValue] = useState("");
   const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
 
   const handleClick = () => {
@@ -48,8 +51,41 @@ function UserNavbar(props) {
     }
   };
 
+  const handleSearchChange = (e) => {
+    var value = e.target.value;
+    setSearchedValue(value);
+  };
+
+  const searchValue = () => {
+    axios
+      .post(
+        HOST.backend_api + "songs/search",
+        {
+          value: searchedValue,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+        history.push({
+          pathname: "/searched",
+          state: {
+            songs: response.data,
+          },
+        });
+      })
+      .catch(function (error) {
+        if (error.response.status === 401) {
+          setOpenUnauthorizedModal(true);
+        }
+      });
+  };
   return (
-    <div className="w-full h-10 bg-[#2c90ac] fixed z-40">
+    <div className="w-full h-12 bg-[#2c90ac] fixed z-40">
       <ErrorMessage
         isOpen={openUnauthorizedModal}
         message="Your session has expired. Please login again."
@@ -59,8 +95,39 @@ function UserNavbar(props) {
           <li onClick={handleClick}>
             <MenuIcon className="w-5 mx-4" />
           </li>
-          <li className="text-xl">{props.title}</li>
+          <li className="xs:text-sm sm:text-xs md:text-xl lg:text-xl">
+            {props.title}
+          </li>
         </ul>
+        <div className="m-auto flex items-center">
+          <div className="text-black">
+            <input
+              type="text"
+              required
+              name="search"
+              value={searchedValue}
+              onChange={(e) => {
+                handleSearchChange(e);
+              }}
+              className="rounded px-2 py-1 mt-2 xs:w-32
+                sm:xs:w-48 md:w-56 lg:w-64 "
+              placeholder="Search..."
+            />
+
+            <IconButton
+              sx={{
+                "&:hover": {
+                  backgroundColor: "none",
+                  cursor: "cursor-pointer",
+                  color: "black",
+                },
+              }}
+              onClick={(e) => searchValue()}
+            >
+              <SearchIcon />
+            </IconButton>
+          </div>
+        </div>
       </div>
       <div
         className={

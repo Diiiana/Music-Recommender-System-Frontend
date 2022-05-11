@@ -19,6 +19,7 @@ import SimilarSongs from "./components/pages/song/SimilarSongs";
 import ViewSongsFromArtist from "./components/pages/song/ViewSongsFromArtist";
 import ViewSongsFromGenre from "./components/pages/song/ViewSongsFromGenre";
 import Discover from "./components/pages/user/Discover";
+import Searched from "./components/pages/song/Searched";
 
 function Root() {
   return (
@@ -71,6 +72,7 @@ function Root() {
           render={() => <ViewSongsFromArtist />}
         />
         <Route extact path="/discover" render={() => <Discover />} />
+        <Route extact path="/searched" render={() => <Searched />} />
       </Switch>
     </Router>
   );

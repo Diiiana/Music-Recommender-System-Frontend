@@ -245,7 +245,7 @@ function ViewSong(props) {
   };
 
   return (
-    <div className=" overflow-y-hidden">
+    <div className="overflow-y-hidden">
       <ErrorMessage
         isOpen={openUnauthorizedModal}
         message="Your session has expired. Please login again."
@@ -465,7 +465,7 @@ function ViewSong(props) {
                     }}
                   >
                     <img
-                      className="block h-auto w-48 lg:w-48 flex-none bg-cover col-span-1"
+                      className="block h-auto w-48 lg:w-48 flex-none bg-cover col-span-1 blur-sm hover:blur-0"
                       src={`data:image/jpeg;base64,${s.image}`}
                       alt=""
                     />
