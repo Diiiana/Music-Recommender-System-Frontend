@@ -1,38 +1,41 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import axios from "axios";
-import UserNavbar from "../../commons/UserNavbar";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import IconButton from "@mui/material/IconButton";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import CommentIcon from "@mui/icons-material/Comment";
-import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
-import ThumbDownOutlinedIcon from "@mui/icons-material/ThumbDownOutlined";
-import LinearProgress from "@mui/material/LinearProgress";
-import Modal from "@mui/material/Modal";
-import CommentBox from "../../commons/CommentBox";
-import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
-import Button from "@material-ui/core/Button";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import { useHistory } from "react-router-dom";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import { TextField } from "@mui/material";
-import { useButtonStyles } from "../../commons/Constants";
-import { HOST } from "../../commons/Hosts";
-import ErrorMessage from "../../commons/ErrorMessage";
-import ReadMoreIcon from "@mui/icons-material/ReadMore";
-import Tooltip from "@mui/material/Tooltip";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+
+import axios from 'axios';
+
+import { TextField } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import LinearProgress from '@mui/material/LinearProgress';
+import Modal from '@mui/material/Modal';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import Button from '@material-ui/core/Button'; //! Versiunea veche de material ui?
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import CommentIcon from '@mui/icons-material/Comment';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import ReadMoreIcon from '@mui/icons-material/ReadMore';
+
+import UserNavbar from '../../commons/UserNavbar';
+import CommentBox from '../../commons/CommentBox';
+import ErrorMessage from '../../commons/ErrorMessage';
+import { useButtonStyles } from '../../commons/Constants';
+import { HOST } from '../../commons/Hosts';
 
 const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
   boxShadow: 24,
   p: 4,
-  width: "45vh",
-  bgcolor: "white",
+  width: '45vh',
+  bgcolor: 'white',
 };
 
 function ViewSong(props) {
@@ -40,118 +43,139 @@ function ViewSong(props) {
   const history = useHistory();
   const classes = useButtonStyles();
 
-  const [song, setSong] = useState("");
-  const [tagDisplay, sedTagDisplay] = useState([]);
+  const [song, setSong] = useState(null);
   const [isLiked, setIsLiked] = useState(-1);
-  const [nameValue, setNameValue] = useState("");
+  const [nameValue, setNameValue] = useState('');
   const [playlists, setPlaylists] = useState([]);
   const [selectedPlaylists, setSelectedPlaylists] = useState([]);
+  const [recommended, setRecommended] = useState(null);
 
   const [open, setOpen] = useState(false);
-  const [recommended, setRecommended] = useState(null);
   const [openUnauthorizedModal, setOpenUnauthorizedModal] = useState(false);
   const [openPlaylistModal, setOpenPlaylistModal] = useState(false);
   const [openCreatePlaylistModal, setOpenCreatePlaylistModal] = useState(false);
 
   useEffect(() => {
-    axios
-      .get(HOST.backend_api + "songs/id/" + songId.id, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
-      .then((response) => {
-        setSong(response.data.song);
-        setIsLiked(response.data.liked);
-        if (
-          response.data.song &&
-          response.data.song.tags &&
-          response.data.song.tags.length > 0
-        ) {
-          const d = response.data.song.tags.map((t) => {
-            return (
-              <p
-                key={t.id}
-                className="hover:cursor-pointer text-xs uppercase inline-block mx-1 mt-2 mb-2 p-1 bg-gray-200"
-              >
-                {t.name}
-              </p>
-            );
-          });
-          sedTagDisplay(d);
-        }
-        axios
-          .get(HOST.backend_api + "users/playlists", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          })
-          .then((response) => {
-            setPlaylists(response.data);
-          })
-          .catch(function (error) {
-            if (error.response.status === 401) {
-              setOpenUnauthorizedModal(true);
-            }
-          });
-      })
-      .catch(function (error) {
-        if (error.response.status === 401) {
-          setOpenUnauthorizedModal(true);
-        }
-      });
-    axios
-      .get(HOST.backend_api + "recommendations/similar/" + songId.id, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
-      .then((response) => {
-        const recommendedSongs = response.data;
-        setRecommended(recommendedSongs);
-      })
-      .catch(function (error) {
-        if (error.response.status === 401) {
-          setOpenUnauthorizedModal(true);
-        }
-      });
+    const handleError = error => {
+      if (error.response.status === 401) {
+        setOpenUnauthorizedModal(true);
+      }
+    };
+    const getSong = async () => {
+      const responseSong = await axios
+        .get(HOST.backend_api + 'songs/id/' + songId.id, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        })
+        .catch(error => handleError(error));
+      if (responseSong) {
+        const dataSong = responseSong.data;
+        setSong(dataSong.song);
+        setIsLiked(dataSong.liked);
+      }
+    };
+    const getPlaylists = async () => {
+      const responsePlaylists = await axios
+        .get(HOST.backend_api + 'users/playlists', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        })
+        .catch(error => handleError(error));
+      if (responsePlaylists) {
+        setPlaylists(responsePlaylists.data);
+      }
+    };
+    const getRecommendations = async () => {
+      const responseRecommendations = await axios
+        .get(HOST.backend_api + 'recommendations/cf_mf', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        })
+        .catch(error => handleError(error));
+      if (responseRecommendations) {
+        setRecommended(responseRecommendations.data);
+      }
+    };
+    getSong();
+    getPlaylists();
+    getRecommendations();
   }, [songId.id]);
 
-  const dislikeSong = () => {
-    axios
-      .get(HOST.backend_api + "songs/user-dislike/id/" + songId.id, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      })
-      .then((response) => {
-        setIsLiked(0);
-      })
-      .catch(function (error) {
-        if (error.response.status === 401) {
-          setOpenUnauthorizedModal(true);
-        }
-      });
+  const handleError = error => {
+    if (error.response.status === 401) {
+      setOpenUnauthorizedModal(true);
+    }
   };
 
-  const likeSong = () => {
-    axios
-      .get(HOST.backend_api + "songs/user-like/id/" + songId.id, {
+  const dislikeSong = async () => {
+    const response = await axios
+      .get(HOST.backend_api + 'songs/user-dislike/id/' + songId.id, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
       })
-      .then((response) => {
-        setIsLiked(1);
-      })
-      .catch(function (error) {
-        if (error.response.status === 401) {
-          setOpenUnauthorizedModal(true);
-        }
-      });
+      .catch(error => handleError(error));
+    if (response) {
+      setIsLiked(0);
+    }
   };
 
-  const handleChange = (e) => {
+  const likeSong = async () => {
+    const response = await axios
+      .get(HOST.backend_api + 'songs/user-like/id/' + songId.id, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      })
+      .catch(error => handleError(error));
+    if (response) {
+      setIsLiked(1);
+    }
+  };
+
+  const saveSongInPlaylists = async e => {
+    e.preventDefault();
+    const response = axios
+      .post(
+        HOST.backend_api + 'users/playlists/save/' + songId.id,
+        {
+          playlists: selectedPlaylists,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        }
+      )
+      .catch(error => handleError(error));
+    if (response) {
+      setOpenPlaylistModal(false);
+    }
+  };
+
+  const saveNewPlaylist = async e => {
+    e.preventDefault();
+    const response = await axios
+      .post(
+        HOST.backend_api + 'users/playlists/new',
+        { playlistName: nameValue.name },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        }
+      )
+      .catch(error => handleError(error));
+    if (response) {
+      setPlaylists(response.data);
+      setOpenCreatePlaylistModal(false);
+    }
+  };
+
+  const handleChange = e => {
     const playlistId = e.target.name;
     if (selectedPlaylists.indexOf(playlistId) === -1) {
       selectedPlaylists.push(playlistId);
@@ -162,32 +186,30 @@ function ViewSong(props) {
     }
   };
 
-  const saveSongInPlaylists = (e) => {
-    axios
-      .post(
-        HOST.backend_api + "users/playlists/save/" + songId.id,
-        {
-          playlists: selectedPlaylists,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      )
-      .then((response) => {
-        setOpenPlaylistModal(false);
-      })
-      .catch(function (error) {
-        if (error.response.status === 401) {
-          setOpenUnauthorizedModal(true);
-        }
-      });
+  const handleOnChangeName = e => {
+    var name = e.target.value;
+    setNameValue(name);
+  };
+
+  const handleRenderDisplayTag = () => {
+    if (!song || !song.tags) {
+      return null;
+    }
+    return song.tags.map(t => {
+      return (
+        <p
+          key={t.id}
+          className="hover:cursor-pointer text-xs uppercase inline-block mx-1 mt-2 mb-2 p-1 bg-gray-200"
+        >
+          {t.name}
+        </p>
+      );
+    });
   };
 
   const displayPlaylists = () => {
-    if (playlists.length !== 0) {
-      return playlists.map((playlist) => {
+    if (playlists && playlists.length > 0) {
+      return playlists.map(playlist => {
         return (
           <div key={playlist.id}>
             <input
@@ -195,7 +217,7 @@ function ViewSong(props) {
               id={playlist.id}
               name={playlist.name}
               value={playlist.name}
-              onChange={(e) => {
+              onChange={e => {
                 handleChange({
                   target: {
                     name: e.target.id,
@@ -217,32 +239,10 @@ function ViewSong(props) {
       );
     }
   };
-  const checkName = (e) => {
-    var name = e.target.value;
-    setNameValue({ ...nameValue, name });
-  };
 
-  const saveNewPlaylist = () => {
-    axios
-      .post(
-        HOST.backend_api + "users/playlists/new",
-        { playlistName: nameValue.name },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      )
-      .then((response) => {
-        setPlaylists(response.data);
-        setOpenCreatePlaylistModal(false);
-      })
-      .catch(function (error) {
-        if (error.response.status === 401) {
-          setOpenUnauthorizedModal(true);
-        }
-      });
-  };
+  if (!song) {
+    return null;
+  }
 
   return (
     <div className="overflow-y-hidden">
@@ -263,15 +263,15 @@ function ViewSong(props) {
             <div className="grid grid-cols-2">
               <IconButton
                 sx={{
-                  "&:hover": {
-                    backgroundColor: "white",
-                    cursor: "cursor-pointer",
-                    color: "black",
+                  '&:hover': {
+                    backgroundColor: 'white',
+                    cursor: 'cursor-pointer',
+                    color: 'black',
                   },
                 }}
-                onClick={(e) => setOpenCreatePlaylistModal(true)}
+                onClick={e => setOpenCreatePlaylistModal(true)}
               >
-                <AddBoxIcon />{" "}
+                <AddBoxIcon />
                 <p
                   className="xs:text-[4vw] sm:text-[2vw] md:text-[2vw]
                 lg:text-[1vw]"
@@ -285,8 +285,8 @@ function ViewSong(props) {
                 variant="contained"
                 color="primary"
                 className={classes.submit}
-                onClick={(e) => {
-                  saveSongInPlaylists();
+                onClick={e => {
+                  saveSongInPlaylists(e);
                 }}
               >
                 Save
@@ -295,7 +295,6 @@ function ViewSong(props) {
           </Box>
         </Modal>
       </div>
-
       <div>
         <Modal
           open={openCreatePlaylistModal}
@@ -314,7 +313,8 @@ function ViewSong(props) {
               label="name"
               name="name"
               autoFocus
-              onChange={(e) => checkName(e)}
+              value={nameValue}
+              onChange={handleOnChangeName}
               className={classes.root}
             />
             <Button
@@ -323,8 +323,8 @@ function ViewSong(props) {
               variant="contained"
               color="primary"
               className={classes.submit}
-              onClick={() => {
-                saveNewPlaylist();
+              onClick={e => {
+                saveNewPlaylist(e);
               }}
             >
               Save
@@ -332,7 +332,6 @@ function ViewSong(props) {
           </Box>
         </Modal>
       </div>
-
       <UserNavbar title="Listening now" />
       <div className="grid-container grid grid-cols-5">
         <div className="bg-[#2c90ac] to-black h-screen w-full col-span-3 mr-24  overflow-y-hidden">
@@ -403,18 +402,15 @@ function ViewSong(props) {
               </div>
             </div>
             <div>
-              <IconButton sx={{ color: "black" }} onClick={(e) => likeSong()}>
+              <IconButton sx={{ color: 'black' }} onClick={e => likeSong()}>
                 {isLiked === 1 ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
               </IconButton>
-              <IconButton
-                sx={{ color: "black" }}
-                onClick={(e) => dislikeSong()}
-              >
+              <IconButton sx={{ color: 'black' }} onClick={e => dislikeSong()}>
                 {isLiked === 0 ? <ThumbDownIcon /> : <ThumbDownOutlinedIcon />}
               </IconButton>
               <IconButton
-                sx={{ color: "black" }}
-                onClick={(e) => {
+                sx={{ color: 'black' }}
+                onClick={e => {
                   setOpenPlaylistModal(true);
                 }}
               >
@@ -423,9 +419,9 @@ function ViewSong(props) {
               <Tooltip title="Similar Songs">
                 <IconButton
                   className="float-right mr-5"
-                  onClick={(e) => {
+                  onClick={e => {
                     history.push({
-                      pathname: "/song/similar/" + songId.id,
+                      pathname: '/song/similar/' + songId.id,
                     });
                   }}
                 >
@@ -444,39 +440,43 @@ function ViewSong(props) {
             <hr />
             <div>
               <div className="mx-2 mt-2">Details</div>
-              {tagDisplay}
+              {handleRenderDisplayTag()}
             </div>
           </div>
         </div>
         <div className="w-full col-span-2 mt-10 flex-right overflow-y-scroll">
-          {recommended === null && <LinearProgress color="inherit" />}
-          <p className="p-2">For you:</p>
-          <div className="h-4/5 lg:h-32">
-            {recommended !== null &&
-              recommended.map((s) => {
-                return (
-                  <div
-                    key={s.id}
-                    className="grid grid-cols-4 mt-2 mb-2 shadow-lg hover:cursor-pointer hover:bg-gray-50"
-                    onClick={(e) => {
-                      history.push({
-                        pathname: "/song/view/" + s.id,
-                      });
-                    }}
-                  >
-                    <img
-                      className="block h-auto w-48 lg:w-48 flex-none bg-cover col-span-1 blur-sm hover:blur-0"
-                      src={`data:image/jpeg;base64,${s.image}`}
-                      alt=""
-                    />
-                    <div className="p-2 col-span-3 w-full">
-                      <p>{s.song_name}</p>
-                      <p>{s.artist.name}</p>
+          {!recommended ? (
+            <LinearProgress color="inherit" />
+          ) : (
+            <>
+              <p className="p-2">For you:</p>
+              <div className="h-4/5 lg:h-32">
+                {recommended.map(s => {
+                  return (
+                    <div
+                      key={s.id}
+                      className="grid grid-cols-4 mt-2 mb-2 shadow-lg hover:cursor-pointer hover:bg-gray-50"
+                      onClick={e => {
+                        history.push({
+                          pathname: '/song/view/' + s.id,
+                        });
+                      }}
+                    >
+                      <img
+                        className="block h-auto w-48 lg:w-48 flex-none bg-cover col-span-1 blur-sm hover:blur-0"
+                        src={`data:image/jpeg;base64,${s.image}`}
+                        alt=""
+                      />
+                      <div className="p-2 col-span-3 w-full">
+                        <p>{s.song_name}</p>
+                        <p>{s.artist.name}</p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-          </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
           <div>
             <Modal
               open={open}
