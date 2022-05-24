@@ -130,7 +130,7 @@ function GenrePreferences() {
       </Modal>
       <div className="w-full">
         <div
-          className="bg-[#00788A]
+          className="bg-[#57728c]
           xl:w-[83rem]
       xs:h-[36rem]
       xl:h-[39rem] 

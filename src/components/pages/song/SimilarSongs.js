@@ -57,8 +57,8 @@ function SimilarSongs(props) {
     <div className="w-full h-screen overflow-y-scroll bg-[#2c90ac]">
       <UserNavbar title="Similar Songs" />
       {songs === null ? (
-        <div className="mt-10">
-          <LinearProgress />
+        <div className="mt-12">
+          <LinearProgress color="inherit"/>
         </div>
       ) : (
         <div

@@ -444,7 +444,7 @@ function ViewSong(props) {
             </div>
           </div>
         </div>
-        <div className="w-full col-span-2 mt-10 flex-right overflow-y-scroll">
+        <div className="w-full col-span-2 mt-12 flex-right overflow-y-scroll">
           {!recommended ? (
             <LinearProgress color="inherit" />
           ) : (
