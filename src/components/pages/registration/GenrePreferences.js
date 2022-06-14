@@ -67,11 +67,10 @@ function GenrePreferences() {
     if (event.target.style.backgroundColor === "black") {
       newColor = "black";
       newBackground = "white";
-      selectedGenre.pop(event.target.id);
+      setSelectedGenre(selectedGenre.filter(id => id !== event.target.id))
     } else {
       if (event.target.id.length > 0) {
-        selectedGenre.push(event.target.id);
-        setSelectedGenre(selectedGenre);
+        setSelectedGenre([...selectedGenre, event.target.id]);
       }
     }
     event.target.style.backgroundColor = newBackground;
@@ -120,8 +119,6 @@ function GenrePreferences() {
       <Modal
         open={open}
         onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
         className="flex justify-center items-center"
       >
         <p className="bg-white rounded h-30 w-15 px-5 py-5">

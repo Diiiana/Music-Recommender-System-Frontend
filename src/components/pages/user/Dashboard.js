@@ -29,7 +29,7 @@ function Dashboard() {
           <div className="group object-contain mx-1">
             <img
               alt=""
-              className="block h-32 w-full rounded object-center object-contain blur-sm hover:blur-0"
+              className="block h-32 w-full rounded object-center object-contain blur-[3px] hover:blur-0"
               src={`data:image/jpeg;base64,${re.image}`}
             />
           </div>

@@ -51,11 +51,9 @@ function Artists() {
   const handleChange = (e) => {
     const artistName = e.target.name;
     if (selectedArtists.indexOf(artistName) === -1) {
-      selectedArtists.push(e.target.name);
-      setSelectedArtists(selectedArtists);
+      setSelectedArtists([...selectedArtists, artistName]);
     } else {
-      selectedArtists.pop(e.target.name);
-      setSelectedArtists(selectedArtists);
+      setSelectedArtists(selectedArtists.filter(name => name !== e.target.name))
     }
   };
 
@@ -105,8 +103,6 @@ function Artists() {
       <Modal
         open={open}
         onClose={handleClose}
-        ariaLabelledby="modal-modal-title"
-        ariaDescribedby="modal-modal-description"
         className="flex justify-center items-center"
       >
         <p className="bg-white rounded h-30 w-15 px-5 py-5">

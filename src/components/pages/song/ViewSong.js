@@ -463,7 +463,7 @@ function ViewSong(props) {
                       }}
                     >
                       <img
-                        className="block h-auto w-48 lg:w-48 flex-none bg-cover col-span-1 blur-sm hover:blur-0"
+                        className="block h-auto w-48 lg:w-48 flex-none bg-cover col-span-1 blur-[3px] hover:blur-0"
                         src={`data:image/jpeg;base64,${s.image}`}
                         alt=""
                       />

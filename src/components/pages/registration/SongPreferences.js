@@ -64,7 +64,9 @@ function SongPreferences() {
       return (
         <div className="group object-contain" key={el.id}>
           <div className="image-container">
-            <img src={`data:image/jpeg;base64,${el.image}`} alt="" />
+            <img 
+            className="blur-[3px]"
+            src={`data:image/jpeg;base64,${el.image}`} alt="" />
             <div
               id={el.id}
               onClick={(e) => {
