@@ -16,7 +16,7 @@ function Dashboard() {
     history.push({
       pathname: "/song/view/" + id,
     });
-  }; 
+  };
 
   function mapSongs() {
     return songData.map((re) => {
@@ -57,7 +57,6 @@ function Dashboard() {
           },
         })
         .then((response) => {
-          console.log(response.data);
           setSongData(response.data);
         })
         .catch(function (error) {
@@ -68,6 +67,18 @@ function Dashboard() {
         });
     }
   }, [location.state]);
+
+  const getMoreSongs = () => {
+    axios
+      .get(HOST.backend_api + "users/more-recommendations", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+        },
+      })
+      .then(function (response) {
+        setSongData((songData) => ([...songData, ...response.data]));
+      });
+  };
 
   return (
     <div className="bg-[#2c90ac] h-screen w-full overflow-y-scroll">
@@ -90,9 +101,7 @@ function Dashboard() {
           </div>
         )}
         <div className="flex justify-center items-center mt-10 mb-6">
-          <Button
-          // onClick={loadMore}
-          >
+          <Button onClick={getMoreSongs}>
             <svg className="animate-bounce w-6 h-6">
               <svg
                 className="w-6 h-6 mx-auto"
