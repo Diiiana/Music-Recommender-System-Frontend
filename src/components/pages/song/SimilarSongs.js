@@ -62,7 +62,7 @@ function SimilarSongs(props) {
         </div>
       ) : (
         <div
-          className="pt-10 grid xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 
+          className="pt-12 grid xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 
       lg:grid-cols-7 lg:mx-2"
         >
           {displaySongs()}
