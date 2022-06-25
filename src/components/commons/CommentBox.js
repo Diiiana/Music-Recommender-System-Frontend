@@ -64,8 +64,8 @@ function CommentBox(songId) {
             {comm.user.id === user.id && (
               <div className="w-full flex justify-end">
                 <div>
-                  <p className="w-1/2 text-red-600 hover:cursor-pointer">
-                    delete
+                  <p className="w-1/2 text-blue-800 hover:cursor-pointer">
+                    me
                   </p>
                 </div>
               </div>

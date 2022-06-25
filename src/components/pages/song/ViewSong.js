@@ -61,6 +61,18 @@ function ViewSong(props) {
         setOpenUnauthorizedModal(true);
       }
     };
+    const getRecommendations = async () => {
+      const responseRecommendations = await axios
+        .get(HOST.backend_api + 'recommendations/cf_mf', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        })
+        .catch(error => handleError(error));
+      if (responseRecommendations) {
+        setRecommended(responseRecommendations.data);
+      }
+    };
     const getSong = async () => {
       const responseSong = await axios
         .get(HOST.backend_api + 'songs/id/' + songId.id, {
@@ -87,21 +99,9 @@ function ViewSong(props) {
         setPlaylists(responsePlaylists.data);
       }
     };
-    const getRecommendations = async () => {
-      const responseRecommendations = await axios
-        .get(HOST.backend_api + 'recommendations/cf_mf', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-          },
-        })
-        .catch(error => handleError(error));
-      if (responseRecommendations) {
-        setRecommended(responseRecommendations.data);
-      }
-    };
+    getRecommendations();
     getSong();
     getPlaylists();
-    getRecommendations();
   }, [songId.id]);
 
   const handleError = error => {
@@ -161,7 +161,7 @@ function ViewSong(props) {
     const response = await axios
       .post(
         HOST.backend_api + 'users/playlists/new',
-        { playlistName: nameValue.name },
+        { playlistName: nameValue },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`,
