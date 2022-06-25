@@ -69,7 +69,7 @@ function ResetPassowrd() {
     } else {
       setEmailError("");
       axios
-        .post(HOST.backend_api + `reset-password`, {
+        .post(HOST.backend_api + `users/reset-password`, {
           email: emailValue.email,
         })
         .then((response) => {
