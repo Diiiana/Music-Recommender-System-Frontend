@@ -1,8 +1,8 @@
-# Frontend
+# Music Recommender System Front-end
 
-Pentru instalarea proiectului, se utilieaza comenzile:
+To install the project, you will need:
 
-1. ```git clone https://github.com/Diiiana/Frontend.git```      &emsp; - descarcare proiect
+1. ```git clone https://github.com/Diiiana/Frontend.git```      &emsp; - download the project
 <hr />
-Instalare biblioteci utilizate<br />
+Install used libraries:<br />
 2.  <mark>npm install</mark>
